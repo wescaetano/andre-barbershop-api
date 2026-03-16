@@ -1,0 +1,20 @@
+<Solution>
+  <Folder Name="/1- Domain/">
+    <Project Path="src/BarberShop.Domain/BarberShop.Domain.csproj" Id="6682bb60-082c-49b0-b35b-502d3558d436" />
+  </Folder>
+  <Folder Name="/2- Infra/">
+    <Project Path="src/BarberShop.Infra/BarberShop.Infra.csproj" Id="b43c2e5c-4a64-4823-9d52-dcc1626def8a" />
+  </Folder>
+  <Folder Name="/3- Application/">
+    <Project Path="src/BarberShop.Application/BarberShop.Application.csproj" Id="467aa983-8898-4185-89f2-2d7b9244d01e" />
+  </Folder>
+  <Folder Name="/4- Api/">
+    <Project Path="src/BarberShop.Api/BarberShop.Api.csproj" Id="59bdb214-a00a-4eae-9d05-1cd28c9346a2" />
+  </Folder>
+  <Folder Name="/5- Communication/">
+    <Project Path="src/BarberShop.Communication/BarberShop.Communication.csproj" Id="59d0537a-a397-4328-81b5-34a731e5a16d" />
+  </Folder>
+  <Folder Name="/6- IOC/">
+    <Project Path="src/BarberShop.IOC/BarberShop.IOC.csproj" Id="0849d03c-a40f-4e86-8d2e-20421d0687dd" />
+  </Folder>
+</Solution>
