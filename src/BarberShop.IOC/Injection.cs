@@ -1,5 +1,6 @@
 ﻿using BarberShop.Application.Config;
 using BarberShop.Application.Interfaces;
+using BarberShop.Application.Services;
 using BarberShop.Infra.Interfaces;
 using BarberShop.Infra.Repositories;
 using Microsoft.Extensions.DependencyInjection;

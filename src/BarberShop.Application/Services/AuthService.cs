@@ -1,4 +1,5 @@
 ﻿using BarberShop.Application.Interfaces;
+using BarberShop.Application.Services;
 using BarberShop.Communication.Enums.User;
 using BarberShop.Communication.Models;
 using BarberShop.Communication.Models.Auth;
