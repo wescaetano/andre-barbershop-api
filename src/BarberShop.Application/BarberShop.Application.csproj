@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Blobs" Version="12.27.0" />
+    <PackageReference Include="FluentValidation" Version="11.11.0" />
     <PackageReference Include="Hangfire.Core" Version="1.8.23" />
     <PackageReference Include="Microsoft.AspNetCore.Hosting.Abstractions" Version="2.3.0" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
