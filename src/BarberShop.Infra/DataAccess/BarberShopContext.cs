@@ -18,6 +18,8 @@ namespace BarberShop.Infra.DataAccess
         public DbSet<ProfileModule>  ProfileModules { get; set; } = null!;
         public DbSet<Profile>  Profiles { get; set; } = null!;
         public DbSet<Module>  Modules { get; set; } = null!;
+        public DbSet<Appointment> Appointments { get; set; } = null!;
+        public DbSet<Payment> Payments { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {

@@ -21,6 +21,7 @@ namespace BarberShop.Domain
         // Navigation properties
         public ICollection<ProfileUser> ProfilesUsers { get; set; } = [];
         public ICollection<RefreshToken> RefreshTokens { get; set; } = [];
+        public ICollection<Appointment> Appointments { get; set; } = [];
         //public ICollection<ErrorLog> ErrorLogs { get; set; } = [];
     }
 }

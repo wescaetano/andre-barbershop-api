@@ -4,6 +4,7 @@ using BarberShop.Infra.DataAccess;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BarberShop.Infra.Migrations
 {
     [DbContext(typeof(BarberShopContext))]
-    partial class BarberShopContextModelSnapshot : ModelSnapshot
+    [Migration("20260404045111_AddAppointmentAndPayment")]
+    partial class AddAppointmentAndPayment
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -61,58 +64,6 @@ namespace BarberShop.Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Modules");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Name = "Users",
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Name = "Auth",
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            Id = 3L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Name = "SendEmail",
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            Id = 4L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Name = "Appointments",
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            Id = 5L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Name = "Payments",
-                            Register = true,
-                            Visualize = true
-                        });
                 });
 
             modelBuilder.Entity("BarberShop.Domain.AccessControl.Profile", b =>
@@ -142,20 +93,6 @@ namespace BarberShop.Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Profiles");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            Name = "Admin",
-                            Status = 1
-                        },
-                        new
-                        {
-                            Id = 2L,
-                            Name = "Cliente",
-                            Status = 1
-                        });
                 });
 
             modelBuilder.Entity("BarberShop.Domain.AccessControl.ProfileModule", b =>
@@ -186,88 +123,6 @@ namespace BarberShop.Infra.Migrations
                     b.HasIndex("ProfileId");
 
                     b.ToTable("ProfilesModules", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            ModuleId = 1L,
-                            ProfileId = 1L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            ModuleId = 2L,
-                            ProfileId = 1L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            ModuleId = 3L,
-                            ProfileId = 1L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            ModuleId = 4L,
-                            ProfileId = 1L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            ModuleId = 5L,
-                            ProfileId = 1L,
-                            Edit = true,
-                            Exclude = true,
-                            Inactivate = true,
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            ModuleId = 2L,
-                            ProfileId = 2L,
-                            Edit = false,
-                            Exclude = false,
-                            Inactivate = false,
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            ModuleId = 4L,
-                            ProfileId = 2L,
-                            Edit = false,
-                            Exclude = false,
-                            Inactivate = true,
-                            Register = true,
-                            Visualize = true
-                        },
-                        new
-                        {
-                            ModuleId = 5L,
-                            ProfileId = 2L,
-                            Edit = false,
-                            Exclude = false,
-                            Inactivate = false,
-                            Register = true,
-                            Visualize = true
-                        });
                 });
 
             modelBuilder.Entity("BarberShop.Domain.AccessControl.ProfileUser", b =>
@@ -283,13 +138,6 @@ namespace BarberShop.Infra.Migrations
                     b.HasIndex("ProfileId");
 
                     b.ToTable("ProfilesUsers", (string)null);
-
-                    b.HasData(
-                        new
-                        {
-                            UserId = 1L,
-                            ProfileId = 1L
-                        });
                 });
 
             modelBuilder.Entity("BarberShop.Domain.Appointment", b =>
@@ -441,17 +289,6 @@ namespace BarberShop.Infra.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Users");
-
-                    b.HasData(
-                        new
-                        {
-                            Id = 1L,
-                            CreationDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
-                            Email = "admin@barbershop.com",
-                            Name = "Admin",
-                            Password = "$2a$12$4sHQj3OUBgi.syi7oQwAf.TCbjhMzvqedwYnoVKPx5PVHR19siKKK",
-                            Status = 1
-                        });
                 });
 
             modelBuilder.Entity("BarberShop.Domain.AccessControl.ProfileModule", b =>

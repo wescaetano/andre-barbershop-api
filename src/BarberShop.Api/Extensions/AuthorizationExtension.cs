@@ -25,7 +25,9 @@ namespace BarberShop.Api.Extensions
                 [
                     "Users",
                     "Auth",
-                    "SendEmail"
+                    "SendEmail",
+                    "Appointments",
+                    "Payments"
                 ];
                 foreach (var m in modules)
                 {

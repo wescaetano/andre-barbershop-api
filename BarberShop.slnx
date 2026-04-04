@@ -17,4 +17,7 @@
   <Folder Name="/6- IOC/">
     <Project Path="src/BarberShop.IOC/BarberShop.IOC.csproj" Id="0849d03c-a40f-4e86-8d2e-20421d0687dd" />
   </Folder>
+  <Folder Name="/7- Tests/">
+    <Project Path="tests/BarberShop.Tests/BarberShop.Tests.csproj" />
+  </Folder>
 </Solution>

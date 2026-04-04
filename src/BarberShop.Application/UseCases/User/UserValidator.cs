@@ -3,6 +3,31 @@ using FluentValidation;
 
 namespace BarberShop.Application.UseCases.User
 {
+    public class GetUsersPaginatedValidator : AbstractValidator<GetUsersPaginatedModel>
+    {
+        private static readonly string[] _allowedSortFields = ["Id", "Name", "Email", "CreationDate"];
+
+        public GetUsersPaginatedValidator()
+        {
+            RuleFor(x => x.PageSize)
+                .InclusiveBetween(1, 100)
+                .WithMessage("O tamanho da página deve ser entre 1 e 100.");
+
+            RuleFor(x => x.PageNumber)
+                .GreaterThanOrEqualTo(1)
+                .WithMessage("O número da página deve ser maior ou igual a 1.");
+
+            RuleFor(x => x.SortField)
+                .Must(f => _allowedSortFields.Contains(f, StringComparer.OrdinalIgnoreCase))
+                .WithMessage($"Campo de ordenação inválido. Valores permitidos: {string.Join(", ", _allowedSortFields)}.");
+
+            RuleFor(x => x.SortOrder)
+                .Must(o => string.Equals(o, "asc", StringComparison.OrdinalIgnoreCase)
+                        || string.Equals(o, "desc", StringComparison.OrdinalIgnoreCase))
+                .WithMessage("Direção de ordenação inválida. Valores permitidos: 'asc', 'desc'.");
+        }
+    }
+
     public class CreateUserValidator : AbstractValidator<CreateUserModel>
     {
         public CreateUserValidator()

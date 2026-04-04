@@ -4,7 +4,10 @@ using BarberShop.Application.Services;
 using BarberShop.Application.UseCases.Appointment.Cancel;
 using BarberShop.Application.UseCases.Appointment.Create;
 using BarberShop.Application.UseCases.Appointment.GetAvailableSlots;
+using BarberShop.Application.UseCases.Appointment.GetById;
+using BarberShop.Application.UseCases.Appointment.GetByUser;
 using BarberShop.Application.UseCases.Auth.Login;
+using BarberShop.Application.UseCases.Auth.RefreshToken;
 using BarberShop.Application.UseCases.Auth.ResetPassword;
 using BarberShop.Application.UseCases.Auth.SendEmailResetPassword;
 using BarberShop.Application.UseCases.Auth.SocialLogin;
@@ -13,18 +16,22 @@ using BarberShop.Application.UseCases.Payment.GetHistory;
 using BarberShop.Application.UseCases.Payment.ProcessWebhook;
 using BarberShop.Application.UseCases.User.ChangeStatus;
 using BarberShop.Application.UseCases.User.Create;
+using BarberShop.Application.UseCases.User.Delete;
+using BarberShop.Application.UseCases.User.GetById;
+using BarberShop.Application.UseCases.User.GetPaginated;
 using BarberShop.Application.UseCases.User.Update;
 using BarberShop.Infra.Interfaces;
 using BarberShop.Infra.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using MoneyScope.Application.Services;
 using MoneyScope.Infra.Repositories;
+using Microsoft.Extensions.Configuration;
 
 namespace BarberShop.IOC
 {
     public static class Injection
     {
-        public static IServiceCollection InjectDependencies(this IServiceCollection services, MigrationConfig? migrationConfig)
+        public static IServiceCollection InjectDependencies(this IServiceCollection services, MigrationConfig? migrationConfig, IConfiguration? configuration = null)
         {
             // Repositories
             services.AddScoped(typeof(IBaseRepository<>), typeof(BaseRepository<>));
@@ -32,26 +39,32 @@ namespace BarberShop.IOC
             services.AddScoped<IRepositoryFactory, RepositoryFactory>();
 
             // Support services
-            services.AddScoped<IBaseService, BaseService>();
             services.AddScoped<ITokenService, TokenService>();
             services.AddScoped<IBlobService, BlobService>();
-            services.AddScoped<IAuthService, AuthService>();
+            services.AddScoped<IEmailService, EmailService>();
+            services.AddHttpClient<IMercadoPagoService, MercadoPagoService>();
 
             // Auth use cases
             services.AddScoped<ILoginUseCase, LoginUseCase>();
             services.AddScoped<ISocialLoginUseCase, SocialLoginUseCase>();
             services.AddScoped<ISendEmailResetPasswordUseCase, SendEmailResetPasswordUseCase>();
             services.AddScoped<IResetPasswordUseCase, ResetPasswordUseCase>();
+            services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
 
             // User use cases
             services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();
             services.AddScoped<IUpdateUserUseCase, UpdateUserUseCase>();
             services.AddScoped<IChangeUserStatusUseCase, ChangeUserStatusUseCase>();
+            services.AddScoped<IGetUserByIdUseCase, GetUserByIdUseCase>();
+            services.AddScoped<IGetUsersPaginatedUseCase, GetUsersPaginatedUseCase>();
+            services.AddScoped<IDeleteUserUseCase, DeleteUserUseCase>();
 
             // Appointment use cases
             services.AddScoped<ICreateAppointmentUseCase, CreateAppointmentUseCase>();
             services.AddScoped<IGetAvailableSlotsUseCase, GetAvailableSlotsUseCase>();
             services.AddScoped<ICancelAppointmentUseCase, CancelAppointmentUseCase>();
+            services.AddScoped<IGetUserAppointmentsUseCase, GetUserAppointmentsUseCase>();
+            services.AddScoped<IGetAppointmentByIdUseCase, GetAppointmentByIdUseCase>();
 
             // Payment use cases
             services.AddScoped<ICreatePaymentUseCase, CreatePaymentUseCase>();

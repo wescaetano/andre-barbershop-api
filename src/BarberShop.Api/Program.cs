@@ -49,6 +49,11 @@ builder.Services.Configure<SmtpConfig>(options =>
 {
     builder.Configuration.GetSection(nameof(SmtpConfig)).Bind(options);
 });
+
+builder.Services.Configure<MercadoPagoConfig>(options =>
+{
+    builder.Configuration.GetSection(nameof(MercadoPagoConfig)).Bind(options);
+});
 //configura mapeamentos de IOptions do appsettings
 builder.Services.AddConfiguredOptions(builder.Configuration);
 

@@ -10,16 +10,16 @@ namespace BarberShop.Application.UseCases.Auth.SendEmailResetPassword
     {
         private readonly IBaseRepository<Domain.User> _userRepository;
         private readonly ITokenService _tokenService;
-        private readonly IAuthService _authService;
+        private readonly IEmailService _emailService;
 
         public SendEmailResetPasswordUseCase(
             IBaseRepository<Domain.User> userRepository,
             ITokenService tokenService,
-            IAuthService authService)
+            IEmailService emailService)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
-            _authService = authService;
+            _emailService = emailService;
         }
 
         public async Task<ResponseModel<dynamic>> ExecuteAsync(string email)
@@ -39,7 +39,7 @@ namespace BarberShop.Application.UseCases.Auth.SendEmailResetPassword
                 to: email,
                 content: $"Use o token a seguir para redefinir sua senha: {token}");
 
-            var sent = await _authService.SendEmail(sendEmailModel, ERedefinitionEmailType.RequestToResetPassword, user.Name);
+            var sent = await _emailService.SendEmail(sendEmailModel, ERedefinitionEmailType.RequestToResetPassword, user.Name);
             if (!sent)
                 return FactoryResponse<dynamic>.BadRequest("Não foi possível enviar o email de redefinição.");
 
