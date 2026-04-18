@@ -491,3 +491,4 @@ project_context.md
 appsettings.Development.json
 appsettings.*.json
 !appsettings.json
+.worktrees/
