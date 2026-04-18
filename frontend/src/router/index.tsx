@@ -1,6 +1,8 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { PrivateRoute } from './PrivateRoute'
 import { AdminRoute } from './AdminRoute'
+import { ClientLayout } from '../components/layout/ClientLayout'
+import { AdminLayout } from '../components/layout/AdminLayout'
 import Login from '../pages/Login'
 import ClientHome from '../pages/client/Home'
 import Book from '../pages/client/Book'
@@ -18,20 +20,30 @@ export const router = createBrowserRouter([
     path: '/app',
     element: <PrivateRoute />,
     children: [
-      { index: true, element: <ClientHome /> },
-      { path: 'book', element: <Book /> },
-      { path: 'appointments', element: <ClientAppointments /> },
-      { path: 'profile', element: <Profile /> },
+      {
+        element: <ClientLayout />,
+        children: [
+          { index: true, element: <ClientHome /> },
+          { path: 'book', element: <Book /> },
+          { path: 'appointments', element: <ClientAppointments /> },
+          { path: 'profile', element: <Profile /> },
+        ],
+      },
     ],
   },
   {
     path: '/admin',
     element: <AdminRoute />,
     children: [
-      { index: true, element: <AdminDashboard /> },
-      { path: 'appointments', element: <AdminAppointments /> },
-      { path: 'users', element: <AdminUsers /> },
-      { path: 'users/:id', element: <UserDetail /> },
+      {
+        element: <AdminLayout />,
+        children: [
+          { index: true, element: <AdminDashboard /> },
+          { path: 'appointments', element: <AdminAppointments /> },
+          { path: 'users', element: <AdminUsers /> },
+          { path: 'users/:id', element: <UserDetail /> },
+        ],
+      },
     ],
   },
 ])
