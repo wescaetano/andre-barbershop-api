@@ -39,7 +39,8 @@ export default function AdminUsers() {
   })
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateForm>({
-    resolver: zodResolver(createSchema),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    resolver: zodResolver(createSchema) as any,
   })
 
   const { mutate: createUser, isPending: creating } = useMutation({
@@ -138,7 +139,7 @@ export default function AdminUsers() {
       )}
 
       <Modal open={createOpen} onClose={() => { setCreateOpen(false); reset() }} title="Novo usuário">
-        <form onSubmit={handleSubmit((d) => createUser(d))} className="flex flex-col gap-4">
+        <form onSubmit={handleSubmit((d) => createUser(d as CreateForm))} className="flex flex-col gap-4">
           <Input id="name" label="Nome" placeholder="Nome completo" error={errors.name?.message} {...register('name')} />
           <Input id="email" label="E-mail" type="email" placeholder="email@exemplo.com" error={errors.email?.message} {...register('email')} />
           <Input id="profile" label="ID do perfil de acesso" type="number" placeholder="Ex: 2" error={errors.accessProfile?.message} {...register('accessProfile')} />
