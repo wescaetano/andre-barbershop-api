@@ -2,6 +2,8 @@ import { describe, it, expect, beforeEach } from 'vitest'
 import { useAuthStore } from '../authStore'
 import { act } from '@testing-library/react'
 
+const baseModules = { infoProfile: { name: '', idProfile: 0 }, moduleProfileUser: [] }
+
 describe('authStore', () => {
   beforeEach(() => {
     act(() => useAuthStore.getState().logout())
@@ -19,7 +21,7 @@ describe('authStore', () => {
       userEmail: 'marcus@test.com',
       accessToken: 'token123',
       refreshToken: 'refresh123',
-      modulesAssembled: {},
+      modulesAssembled: baseModules,
       dtExpiration: '',
       dtCreation: '',
     }))
@@ -34,7 +36,10 @@ describe('authStore', () => {
       userEmail: 'admin@test.com',
       accessToken: 'token',
       refreshToken: 'refresh',
-      modulesAssembled: { Users: { Visualize: true, Edit: true, Register: true, Inactivate: true, Exclude: true } },
+      modulesAssembled: {
+        infoProfile: { name: 'Admin', idProfile: 1 },
+        moduleProfileUser: [{ name: 'Users', idModule: 1, visualize: true, edit: true, register: true, inactivate: true, exclude: true }],
+      },
       dtExpiration: '',
       dtCreation: '',
     }))
@@ -48,7 +53,10 @@ describe('authStore', () => {
       userEmail: 'client@test.com',
       accessToken: 'token',
       refreshToken: 'refresh',
-      modulesAssembled: { Appointments: { Visualize: true, Edit: false, Register: true, Inactivate: false, Exclude: false } },
+      modulesAssembled: {
+        infoProfile: { name: 'Cliente', idProfile: 2 },
+        moduleProfileUser: [{ name: 'Appointments', idModule: 2, visualize: true, edit: false, register: true, inactivate: false, exclude: false }],
+      },
       dtExpiration: '',
       dtCreation: '',
     }))
@@ -59,7 +67,7 @@ describe('authStore', () => {
     act(() => useAuthStore.getState().setAuth({
       userId: 1, userName: 'X', userEmail: 'x@x.com',
       accessToken: 'tok', refreshToken: 'ref',
-      modulesAssembled: {}, dtExpiration: '', dtCreation: '',
+      modulesAssembled: baseModules, dtExpiration: '', dtCreation: '',
     }))
     act(() => useAuthStore.getState().logout())
     expect(useAuthStore.getState().isAuthenticated).toBe(false)

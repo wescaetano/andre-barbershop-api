@@ -25,7 +25,7 @@ export const useAuthStore = create<AuthState>()(
       userProfileImage: null,
       accessToken: null,
       refreshToken: null,
-      modulesAssembled: {},
+      modulesAssembled: { infoProfile: { name: '', idProfile: 0 }, moduleProfileUser: [] },
       role: null,
       isAuthenticated: false,
       setAuth: (data) =>
@@ -37,7 +37,7 @@ export const useAuthStore = create<AuthState>()(
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
           modulesAssembled: data.modulesAssembled,
-          role: 'Users' in data.modulesAssembled ? 'admin' : 'client',
+          role: data.modulesAssembled.moduleProfileUser.some((m) => m.name === 'Users') ? 'admin' : 'client',
           isAuthenticated: true,
         }),
       logout: () =>
@@ -48,7 +48,7 @@ export const useAuthStore = create<AuthState>()(
           userProfileImage: null,
           accessToken: null,
           refreshToken: null,
-          modulesAssembled: {},
+          modulesAssembled: { infoProfile: { name: '', idProfile: 0 }, moduleProfileUser: [] },
           role: null,
           isAuthenticated: false,
         }),

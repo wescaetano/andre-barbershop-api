@@ -103,7 +103,7 @@ export default function Book() {
 
   const dateString = selectedDate ? toISODate(selectedDate) : ''
 
-  const { data: slots = [], isFetching: loadingSlots } = useQuery({
+  const { data: slots = [], isFetching: loadingSlots, isError: slotsError } = useQuery({
     queryKey: ['slots', dateString],
     queryFn: () => appointmentsApi.getAvailableSlots(dateString),
     enabled: !!dateString && step >= 1,
@@ -174,6 +174,15 @@ export default function Book() {
             </div>
             {loadingSlots ? (
               <div className="flex justify-center py-10"><Spinner /></div>
+            ) : slotsError ? (
+              <div className="py-8 flex flex-col items-center gap-2 text-center">
+                <p className="text-sm font-body text-text-secondary">Não foi possível carregar os horários.</p>
+                <p className="text-xs font-body text-text-secondary/60">Verifique se seu perfil tem permissão de acesso.</p>
+              </div>
+            ) : slots.length === 0 ? (
+              <div className="py-8 text-center">
+                <p className="text-sm font-body text-text-secondary">Nenhum horário disponível nesta data.</p>
+              </div>
             ) : (
               <SlotGrid slots={slots} selected={selectedSlot} onSelect={setSelectedSlot} />
             )}

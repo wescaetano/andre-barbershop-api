@@ -1,9 +1,19 @@
-export interface ModulePermissions {
-  Visualize: boolean
-  Edit: boolean
-  Register: boolean
-  Inactivate: boolean
-  Exclude: boolean
+export interface ModuleProfileUser {
+  name: string
+  idModule: number
+  visualize: boolean
+  edit: boolean
+  register: boolean
+  inactivate: boolean
+  exclude: boolean
+}
+
+export interface ModulesAssembled {
+  infoProfile: {
+    name: string
+    idProfile: number
+  }
+  moduleProfileUser: ModuleProfileUser[]
 }
 
 export interface LoginResponse {
@@ -13,7 +23,7 @@ export interface LoginResponse {
   userProfileImage?: string
   accessToken: string
   refreshToken: string
-  modulesAssembled: Record<string, ModulePermissions>
+  modulesAssembled: ModulesAssembled
   dtCreation: string
   dtExpiration: string
 }

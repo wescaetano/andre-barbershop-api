@@ -41,7 +41,7 @@ export default function Login() {
     setLoading(true)
     try {
       const data = await login(email, password)
-      navigate('Users' in data.modulesAssembled ? '/admin' : '/app', { replace: true })
+      navigate(data.modulesAssembled.moduleProfileUser.some((m) => m.name === 'Users') ? '/admin' : '/app', { replace: true })
     } catch (err: unknown) {
       const label = err instanceof Error ? err.message : ''
       toast(getMessage(label, 'Erro ao fazer login.'), 'error')
