@@ -487,8 +487,3 @@ $RECYCLE.BIN/
 docs/
 project_context.md
 
-# Local dev secrets (never commit)
-appsettings.Development.json
-appsettings.*.json
-!appsettings.json
-.worktrees/
