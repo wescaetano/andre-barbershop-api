@@ -8,9 +8,9 @@ using Hangfire;
 using Hangfire.Console;
 using Hangfire.MemoryStorage;
 using Microsoft.EntityFrameworkCore;
-using MoneyScope.Application.Services;
 using System.Text.Json.Serialization;
 using BarberShop.Api.Extensions;
+using BarberShop.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 ConfigurationManager config = builder.Configuration;

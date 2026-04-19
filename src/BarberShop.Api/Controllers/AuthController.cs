@@ -1,5 +1,6 @@
 using BarberShop.Application.UseCases.Auth.Login;
 using BarberShop.Application.UseCases.Auth.RefreshToken;
+using BarberShop.Application.UseCases.Auth.Register;
 using BarberShop.Application.UseCases.Auth.ResetPassword;
 using BarberShop.Application.UseCases.Auth.SendEmailResetPassword;
 using BarberShop.Application.UseCases.Auth.SocialLogin;

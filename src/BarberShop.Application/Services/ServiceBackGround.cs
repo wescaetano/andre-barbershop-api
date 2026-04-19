@@ -9,7 +9,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace MoneyScope.Application.Services
+namespace BarberShop.Application.Services
 {
     public class ServiceBackGround : BackgroundService
     {

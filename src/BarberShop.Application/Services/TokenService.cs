@@ -10,7 +10,7 @@ using System.Security.Claims;
 using System.Security.Principal;
 using System.Text;
 using System.Threading.Tasks;
-using MoneyScope.Application.Services;
+using BarberShop.Application.Services;
 using BarberShop.Communication.Token;
 using BarberShop.Infra.Interfaces;
 using BarberShop.Communication.Models;

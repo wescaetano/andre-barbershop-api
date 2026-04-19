@@ -23,7 +23,6 @@ using BarberShop.Application.UseCases.User.Update;
 using BarberShop.Infra.Interfaces;
 using BarberShop.Infra.Repositories;
 using Microsoft.Extensions.DependencyInjection;
-using MoneyScope.Application.Services;
 using MoneyScope.Infra.Repositories;
 using Microsoft.Extensions.Configuration;
 
