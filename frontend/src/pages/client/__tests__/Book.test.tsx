@@ -23,8 +23,9 @@ vi.mock('../../../api/appointments', () => ({
   },
 }))
 
+const mockToast = vi.fn()
 vi.mock('../../../components/ui/Toast', () => ({
-  useToast: () => vi.fn(),
+  useToast: () => mockToast,
 }))
 
 vi.mock('../../../hooks/useApiError', () => ({
@@ -50,6 +51,7 @@ describe('Book — auth gate', () => {
       selector({ isAuthenticated: false, userId: null })
     )
     mockNavigate.mockClear()
+    mockToast.mockClear()
   })
 
   it('shows auth modal on confirm step when unauthenticated', async () => {
@@ -89,5 +91,21 @@ describe('Book — auth gate', () => {
 
     await userEvent.click(screen.getByRole('button', { name: /Entrar/i }))
     expect(mockNavigate).toHaveBeenCalledWith('/login', { state: { returnTo: '/book' } })
+  })
+
+  it('navigates to /login?mode=register with returnTo state when "Criar conta" is clicked', async () => {
+    renderBook()
+
+    const dayButtons = screen
+      .getAllByRole('button')
+      .filter((b) => /^\d+$/.test(b.textContent ?? '') && !b.hasAttribute('disabled'))
+    await userEvent.click(dayButtons[0])
+    await userEvent.click(screen.getByText('Próximo'))
+    const slot = await screen.findByRole('button', { name: '09:00' })
+    await userEvent.click(slot)
+    await userEvent.click(screen.getByText('Próximo'))
+
+    await userEvent.click(screen.getByRole('button', { name: /Criar conta/i }))
+    expect(mockNavigate).toHaveBeenCalledWith('/login?mode=register', { state: { returnTo: '/book' } })
   })
 })
