@@ -5,6 +5,7 @@ import { ChevronLeft, Calendar, Clock, Check } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { appointmentsApi } from '../../api/appointments'
 import { Button } from '../../components/ui/Button'
+import { Modal } from '../../components/ui/Modal'
 import { Spinner } from '../../components/ui/Spinner'
 import { useToast } from '../../components/ui/Toast'
 import { useApiError } from '../../hooks/useApiError'
@@ -97,6 +98,7 @@ export default function Book() {
   const toast = useToast()
   const { getMessage } = useApiError()
   const userId = useAuthStore((s) => s.userId)
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
   const [step, setStep] = useState(0)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
@@ -148,6 +150,24 @@ export default function Book() {
           </div>
         ))}
       </div>
+
+      <Modal
+        open={step === 2 && !isAuthenticated}
+        onClose={() => setStep(1)}
+        title="Conta necessária"
+      >
+        <div className="flex flex-col gap-4">
+          <p className="text-sm font-body text-text-secondary">
+            Para finalizar o agendamento, crie uma conta ou entre na sua.
+          </p>
+          <Button fullWidth size="lg" onClick={() => navigate('/login', { state: { returnTo: '/book' } })}>
+            Entrar
+          </Button>
+          <Button fullWidth size="lg" variant="ghost" onClick={() => navigate('/login?mode=register', { state: { returnTo: '/book' } })}>
+            Criar conta
+          </Button>
+        </div>
+      </Modal>
 
       <div className="flex-1 px-5 pt-6 pb-24">
         {step === 0 && (
