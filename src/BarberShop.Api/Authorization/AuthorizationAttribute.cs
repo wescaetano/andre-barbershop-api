@@ -50,6 +50,10 @@ namespace BarberShop.Api.Authorization
         /// <param name="filterContext"></param>
         public async void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            var endpoint = filterContext.HttpContext.GetEndpoint();
+            if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
+                return;
+
             var usuarioId = (string?)filterContext.HttpContext.Items["id"];
 
             var controller = filterContext.Controller as BaseController;
