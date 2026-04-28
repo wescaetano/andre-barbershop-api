@@ -4,7 +4,7 @@ import { useQuery } from '@tanstack/react-query'
 import { useAuthStore } from '../../store/authStore'
 import { appointmentsApi } from '../../api/appointments'
 import { Button } from '../../components/ui/Button'
-import { AppointmentBadge } from '../../components/ui/Badge'
+import { AppointmentBadge, Badge } from '../../components/ui/Badge'
 import { Spinner } from '../../components/ui/Spinner'
 import type { Appointment } from '../../types/appointment'
 
@@ -43,6 +43,7 @@ export default function ClientHome() {
   const navigate = useNavigate()
   const userId = useAuthStore((s) => s.userId)
   const userName = useAuthStore((s) => s.userName)
+  const role = useAuthStore((s) => s.role)
 
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ['appointments', userId],
@@ -63,6 +64,22 @@ export default function ClientHome() {
         <h1 className="font-display font-extrabold text-4xl uppercase leading-none">
           Olá,<br />{userName?.split(' ')[0] ?? 'Cliente'}
         </h1>
+      </div>
+
+      {/* Role banner */}
+      <div className="px-5 py-3 bg-bg-surface border-b border-border flex items-center justify-between">
+        <span className="text-sm font-body text-text-secondary">
+          Seja bem-vindo ao BarberAgenda!
+        </span>
+        <Badge
+          className={
+            role === 'admin'
+              ? 'bg-accent/10 text-accent border border-accent/30'
+              : 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+          }
+        >
+          {role === 'admin' ? 'Barbeiro' : 'Cliente'}
+        </Badge>
       </div>
 
       <div className="px-5 pt-6 flex flex-col gap-6">
