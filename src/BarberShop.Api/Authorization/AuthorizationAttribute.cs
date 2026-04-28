@@ -50,6 +50,7 @@ namespace BarberShop.Api.Authorization
         /// <param name="filterContext"></param>
         public async void OnActionExecuting(ActionExecutingContext filterContext)
         {
+            // Skip custom policy check for actions that explicitly opt out via [AllowAnonymous].
             var endpoint = filterContext.HttpContext.GetEndpoint();
             if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
                 return;
