@@ -67,7 +67,7 @@ export default function ClientHome() {
 
       <div className="px-5 pt-6 flex flex-col gap-6">
         {/* CTA */}
-        <Button fullWidth size="lg" onClick={() => navigate('/app/book')}>
+        <Button fullWidth size="lg" onClick={() => navigate('/book')}>
           <CalendarPlus size={18} />
           Agendar Agora
         </Button>
@@ -88,7 +88,7 @@ export default function ClientHome() {
             <div className="border border-border border-dashed rounded-sm p-8 flex flex-col items-center gap-3 text-center">
               <CalendarPlus size={32} className="text-text-secondary" strokeWidth={1} />
               <p className="text-text-secondary text-sm font-body">Nenhum agendamento próximo.</p>
-              <Button size="sm" onClick={() => navigate('/app/book')}>Fazer primeiro agendamento</Button>
+              <Button size="sm" onClick={() => navigate('/book')}>Fazer primeiro agendamento</Button>
             </div>
           )}
 

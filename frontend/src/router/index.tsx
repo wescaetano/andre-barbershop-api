@@ -15,6 +15,7 @@ import UserDetail from '../pages/admin/UserDetail'
 
 export const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
+  { path: '/book', element: <Book /> },
   { path: '/', element: <Navigate to="/login" replace /> },
   {
     path: '/app',
@@ -24,7 +25,6 @@ export const router = createBrowserRouter([
         element: <ClientLayout />,
         children: [
           { index: true, element: <ClientHome /> },
-          { path: 'book', element: <Book /> },
           { path: 'appointments', element: <ClientAppointments /> },
           { path: 'profile', element: <Profile /> },
         ],
