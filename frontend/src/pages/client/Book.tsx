@@ -128,7 +128,7 @@ export default function Book() {
   return (
     <div className="min-h-screen bg-bg-base flex flex-col">
       <div className="bg-bg-surface border-b border-border px-5 pt-10 pb-4 flex items-center gap-3">
-        <button onClick={() => step === 0 ? navigate('/app') : setStep(s => s - 1)} className="text-text-secondary hover:text-text-primary">
+        <button onClick={() => step === 0 ? navigate(-1) : setStep(s => s - 1)} className="text-text-secondary hover:text-text-primary">
           <ChevronLeft size={22} />
         </button>
         <h1 className="font-display font-bold text-2xl uppercase">Agendar</h1>
@@ -177,7 +177,7 @@ export default function Book() {
             ) : slotsError ? (
               <div className="py-8 flex flex-col items-center gap-2 text-center">
                 <p className="text-sm font-body text-text-secondary">Não foi possível carregar os horários.</p>
-                <p className="text-xs font-body text-text-secondary/60">Verifique se seu perfil tem permissão de acesso.</p>
+                <p className="text-xs font-body text-text-secondary/60">Tente novamente mais tarde.</p>
               </div>
             ) : slots.length === 0 ? (
               <div className="py-8 text-center">

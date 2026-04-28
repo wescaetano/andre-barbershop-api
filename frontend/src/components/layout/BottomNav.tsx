@@ -3,7 +3,7 @@ import { Home, CalendarPlus, Calendar, User } from 'lucide-react'
 
 const links = [
   { to: '/app', label: 'Início', Icon: Home, end: true },
-  { to: '/book', label: 'Agendar', Icon: CalendarPlus, end: false },
+  { to: '/book', label: 'Agendar', Icon: CalendarPlus },
   { to: '/app/appointments', label: 'Meus', Icon: Calendar, end: false },
   { to: '/app/profile', label: 'Perfil', Icon: User, end: false },
 ]
