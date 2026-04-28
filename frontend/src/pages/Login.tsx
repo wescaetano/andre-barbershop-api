@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -21,6 +21,8 @@ type FormData = z.infer<typeof schema>
 export default function Login() {
   const { login, isAuthenticated, role } = useAuth()
   const navigate = useNavigate()
+  const location = useLocation()
+  const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const toast = useToast()
   const { getMessage } = useApiError()
   const [loading, setLoading] = useState(false)
@@ -41,7 +43,8 @@ export default function Login() {
     setLoading(true)
     try {
       const data = await login(email, password)
-      navigate(data.modulesAssembled.moduleProfileUser.some((m) => m.name === 'Users') ? '/admin' : '/app', { replace: true })
+      const isAdmin = data.modulesAssembled.moduleProfileUser.some((m) => m.name === 'Users')
+      navigate(returnTo ?? (isAdmin ? '/admin' : '/app'), { replace: true })
     } catch (err: unknown) {
       const label = err instanceof Error ? err.message : ''
       toast(getMessage(label, 'Erro ao fazer login.'), 'error')
