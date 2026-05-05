@@ -1,7 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
 import { Calendar, Clock } from 'lucide-react'
 import { appointmentsApi } from '../../api/appointments'
-import { AppointmentBadge } from '../../components/ui/Badge'
+import { AppointmentBadge, Badge } from '../../components/ui/Badge'
 import { Spinner } from '../../components/ui/Spinner'
 import { useAuthStore } from '../../store/authStore'
 
@@ -38,6 +38,8 @@ function StatCard({ label, value, Icon }: { label: string; value: number; Icon: 
 
 export default function AdminDashboard() {
   const userId = useAuthStore((s) => s.userId)
+  const userName = useAuthStore((s) => s.userName)
+  const role = useAuthStore((s) => s.role)
 
   const { data: appointments = [], isLoading } = useQuery({
     queryKey: ['admin-appointments'],
@@ -53,9 +55,23 @@ export default function AdminDashboard() {
 
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-display font-extrabold text-4xl uppercase">Dashboard</h1>
-        <p className="text-text-secondary text-sm font-body mt-1">Visão geral do sistema</p>
+      <div className="flex items-start justify-between gap-4">
+        <div>
+          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">BarberAgenda</p>
+          <h1 className="font-display font-extrabold text-4xl uppercase leading-none">
+            Olá, {userName?.split(' ')[0] ?? 'Barbeiro'}
+          </h1>
+          <p className="text-text-secondary text-sm font-body mt-2">Seja bem-vindo ao BarberAgenda!</p>
+        </div>
+        <Badge
+          className={
+            role === 'admin'
+              ? 'bg-accent/10 text-accent border border-accent/30'
+              : 'bg-blue-500/10 text-blue-400 border border-blue-500/30'
+          }
+        >
+          {role === 'admin' ? 'Barbeiro' : 'Cliente'}
+        </Badge>
       </div>
 
       {isLoading ? (

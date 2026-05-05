@@ -11,7 +11,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace BarberShop.Api.Controllers
 {
     /// <summary>Gerenciamento de usuários</summary>
-    [APIAuthorization("Users-C", "Users-E", "Users-V", "Users-I")]
     public class UserController : BaseController
     {
         private readonly ICreateUserUseCase _createUserUseCase;
@@ -39,6 +38,7 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Cria um novo usuário</summary>
+        // [APIAuthorization("Users-C")]
         [HttpPost]
         public async Task<IActionResult> Create([FromBody] CreateUserModel model)
         {
@@ -47,6 +47,7 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Atualiza dados de um usuário existente</summary>
+        // [APIAuthorization("Users-E")]
         [HttpPut]
         public async Task<IActionResult> Update([FromBody] UpdateUserModel model)
         {
@@ -55,6 +56,7 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Altera o status (ativo/inativo) de um usuário</summary>
+        [APIAuthorization("Users-V")]
         [HttpPatch("status")]
         public async Task<IActionResult> ChangeStatus([FromBody] ChangeUserStatusModel model)
         {
@@ -63,6 +65,7 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Busca um usuário pelo ID, incluindo seus perfis de acesso</summary>
+        [APIAuthorization("Users-I")]
         [HttpGet("{id:long}")]
         public async Task<IActionResult> GetById([FromRoute] long id)
         {
@@ -71,6 +74,7 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Lista usuários com paginação e filtros. Filtros: name, email, status. Ordenação: Id | Name | Email | CreationDate (asc/desc)</summary>
+        [APIAuthorization("Users-I")]
         [HttpGet]
         public async Task<IActionResult> GetPaginated([FromQuery] GetUsersPaginatedModel model)
         {
@@ -79,6 +83,7 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Remove um usuário via soft delete (preenche ExclusionDate, não apaga do banco)</summary>
+        [APIAuthorization("Users-D")]
         [HttpDelete("{id:long}")]
         public async Task<IActionResult> Delete([FromRoute] long id)
         {

@@ -8,6 +8,7 @@ using BarberShop.Application.UseCases.Appointment.GetById;
 using BarberShop.Application.UseCases.Appointment.GetByUser;
 using BarberShop.Application.UseCases.Auth.Login;
 using BarberShop.Application.UseCases.Auth.RefreshToken;
+using BarberShop.Application.UseCases.Auth.Register;
 using BarberShop.Application.UseCases.Auth.ResetPassword;
 using BarberShop.Application.UseCases.Auth.SendEmailResetPassword;
 using BarberShop.Application.UseCases.Auth.SocialLogin;
@@ -25,6 +26,7 @@ using BarberShop.Infra.Repositories;
 using Microsoft.Extensions.DependencyInjection;
 using MoneyScope.Infra.Repositories;
 using Microsoft.Extensions.Configuration;
+using BarberShop.Application.UseCases.Auth.ResetPasswwordById;
 
 namespace BarberShop.IOC
 {
@@ -45,10 +47,12 @@ namespace BarberShop.IOC
 
             // Auth use cases
             services.AddScoped<ILoginUseCase, LoginUseCase>();
+            services.AddScoped<IRegisterUseCase, RegisterUseCase>();
             services.AddScoped<ISocialLoginUseCase, SocialLoginUseCase>();
             services.AddScoped<ISendEmailResetPasswordUseCase, SendEmailResetPasswordUseCase>();
             services.AddScoped<IResetPasswordUseCase, ResetPasswordUseCase>();
             services.AddScoped<IRefreshTokenUseCase, RefreshTokenUseCase>();
+            services.AddScoped<IResetPasswordByIdUseCase, ResetPasswordByIdUseCase>();
 
             // User use cases
             services.AddScoped<ICreateUserUseCase, CreateUserUseCase>();

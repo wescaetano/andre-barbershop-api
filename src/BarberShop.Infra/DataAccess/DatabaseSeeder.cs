@@ -8,8 +8,8 @@ namespace BarberShop.Infra.DataAccess
 {
     public class DatabaseSeeder
     {
-        // Default password: Admin@123
-        private const string AdminPasswordHash = "$2a$12$4sHQj3OUBgi.syi7oQwAf.TCbjhMzvqedwYnoVKPx5PVHR19siKKK";
+        // Default password: BarberAgendaPassword
+        private const string AdminPasswordHash = "$2a$15$2M1byKnSOu52VViSeYWEHeK1q3uXWKq8l.OY6Pa8KI08dz2P9feUK";
 
         public static void Seed(ModelBuilder modelBuilder)
         {
@@ -63,7 +63,7 @@ namespace BarberShop.Infra.DataAccess
             {
                 Name         = "Admin",
                 Email        = "admin@barbershop.com",
-                Password     = AdminPasswordHash,
+                Password     = AdminPasswordHash, // BarberAgendaPassword
                 Status       = EUserStatus.Ativo,
                 CreationDate = new DateTime(2024, 1, 1, 0, 0, 0, DateTimeKind.Utc)
             };

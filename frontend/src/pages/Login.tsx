@@ -1,9 +1,9 @@
 import { useState } from 'react'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { Scissors } from 'lucide-react'
+import { Scissors, CheckCircle } from 'lucide-react'
 import { useAuth } from '../hooks/useAuth'
 import { useToast } from '../components/ui/Toast'
 import { useApiError } from '../hooks/useApiError'
@@ -11,35 +11,43 @@ import { Input } from '../components/ui/Input'
 import { Button } from '../components/ui/Button'
 import { authApi } from '../api/auth'
 
-const schema = z.object({
+const loginSchema = z.object({
   email: z.string().email('E-mail inválido'),
   password: z.string().min(1, 'Senha obrigatória'),
 })
 
-type FormData = z.infer<typeof schema>
+const registerSchema = z.object({
+  name: z.string().min(1, 'Nome obrigatório'),
+  email: z.string().email('E-mail inválido'),
+})
+
+type LoginData = z.infer<typeof loginSchema>
+type RegisterData = z.infer<typeof registerSchema>
 
 export default function Login() {
   const { login, isAuthenticated, role } = useAuth()
   const navigate = useNavigate()
   const location = useLocation()
+  const [searchParams] = useSearchParams()
+  const mode = searchParams.get('mode')
   const returnTo = (location.state as { returnTo?: string } | null)?.returnTo
   const toast = useToast()
   const { getMessage } = useApiError()
   const [loading, setLoading] = useState(false)
+  const [registered, setRegistered] = useState(false)
   const [forgotOpen, setForgotOpen] = useState(false)
   const [forgotEmail, setForgotEmail] = useState('')
   const [forgotLoading, setForgotLoading] = useState(false)
 
-  const { register, handleSubmit, formState: { errors } } = useForm<FormData>({
-    resolver: zodResolver(schema),
-  })
+  const loginForm = useForm<LoginData>({ resolver: zodResolver(loginSchema) })
+  const registerForm = useForm<RegisterData>({ resolver: zodResolver(registerSchema) })
 
   if (isAuthenticated) {
     navigate(role === 'admin' ? '/admin' : '/app', { replace: true })
     return null
   }
 
-  const onSubmit = async ({ email, password }: FormData) => {
+  const onLogin = async ({ email, password }: LoginData) => {
     setLoading(true)
     try {
       const data = await login(email, password)
@@ -48,6 +56,20 @@ export default function Login() {
     } catch (err: unknown) {
       const label = err instanceof Error ? err.message : ''
       toast(getMessage(label, 'Erro ao fazer login.'), 'error')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const onRegister = async ({ name, email }: RegisterData) => {
+    setLoading(true)
+    try {
+      const res = await authApi.register(name, email)
+      if (!res.success) throw new Error(res.responseLabel)
+      setRegistered(true)
+    } catch (err: unknown) {
+      const label = err instanceof Error ? err.message : ''
+      toast(getMessage(label, 'Erro ao criar conta.'), 'error')
     } finally {
       setLoading(false)
     }
@@ -68,6 +90,9 @@ export default function Login() {
     }
   }
 
+  const goToLogin = () => navigate('/login', { state: { returnTo }, replace: true })
+  const goToRegister = () => navigate('/login?mode=register', { state: { returnTo }, replace: true })
+
   return (
     <div className="min-h-screen bg-bg-base flex flex-col items-center justify-center p-6">
       {/* Logo */}
@@ -83,39 +108,108 @@ export default function Login() {
 
       {/* Card */}
       <div className="w-full max-w-sm bg-bg-surface border border-border rounded-sm p-6 flex flex-col gap-5">
-        <div className="border-l-2 border-accent pl-3">
-          <h2 className="font-display font-bold text-xl uppercase tracking-wide">Acesse sua conta</h2>
-          <p className="text-text-secondary text-xs font-body mt-0.5">Entre com suas credenciais</p>
-        </div>
 
-        <form onSubmit={handleSubmit(onSubmit)} className="flex flex-col gap-4" noValidate>
-          <Input
-            id="email"
-            label="E-mail"
-            type="email"
-            placeholder="seuemail@exemplo.com"
-            error={errors.email?.message}
-            {...register('email')}
-          />
-          <Input
-            id="password"
-            label="Senha"
-            type="password"
-            placeholder="••••••••"
-            error={errors.password?.message}
-            {...register('password')}
-          />
-          <Button type="submit" fullWidth size="lg" loading={loading}>
-            Entrar
-          </Button>
-        </form>
+        {/* ── Registro: sucesso ── */}
+        {mode === 'register' && registered && (
+          <div className="flex flex-col items-center gap-4 py-4 text-center">
+            <CheckCircle size={40} className="text-accent" strokeWidth={1.5} />
+            <div>
+              <h2 className="font-display font-bold text-xl uppercase tracking-wide">Conta criada!</h2>
+              <p className="text-text-secondary text-sm font-body mt-1">
+                Verifique seu e-mail para definir sua senha.
+              </p>
+            </div>
+            <Button fullWidth size="lg" onClick={goToLogin}>
+              Ir para o login
+            </Button>
+          </div>
+        )}
 
-        <button
-          onClick={() => setForgotOpen(true)}
-          className="text-xs text-text-secondary hover:text-accent transition-colors font-body text-center"
-        >
-          Esqueci minha senha
-        </button>
+        {/* ── Formulário de registro ── */}
+        {mode === 'register' && !registered && (
+          <>
+            <div className="border-l-2 border-accent pl-3">
+              <h2 className="font-display font-bold text-xl uppercase tracking-wide">Criar conta</h2>
+              <p className="text-text-secondary text-xs font-body mt-0.5">Preencha seus dados para começar</p>
+            </div>
+
+            <form onSubmit={registerForm.handleSubmit(onRegister)} className="flex flex-col gap-4" noValidate>
+              <Input
+                id="name"
+                label="Nome"
+                type="text"
+                placeholder="Seu nome completo"
+                error={registerForm.formState.errors.name?.message}
+                {...registerForm.register('name')}
+              />
+              <Input
+                id="reg-email"
+                label="E-mail"
+                type="email"
+                placeholder="seuemail@exemplo.com"
+                error={registerForm.formState.errors.email?.message}
+                {...registerForm.register('email')}
+              />
+              <Button type="submit" fullWidth size="lg" loading={loading}>
+                Criar conta
+              </Button>
+            </form>
+
+            <button
+              onClick={goToLogin}
+              className="text-xs text-text-secondary hover:text-accent transition-colors font-body text-center"
+            >
+              Já tenho conta — <span className="text-accent">Entrar</span>
+            </button>
+          </>
+        )}
+
+        {/* ── Formulário de login ── */}
+        {mode !== 'register' && (
+          <>
+            <div className="border-l-2 border-accent pl-3">
+              <h2 className="font-display font-bold text-xl uppercase tracking-wide">Acesse sua conta</h2>
+              <p className="text-text-secondary text-xs font-body mt-0.5">Entre com suas credenciais</p>
+            </div>
+
+            <form onSubmit={loginForm.handleSubmit(onLogin)} className="flex flex-col gap-4" noValidate>
+              <Input
+                id="email"
+                label="E-mail"
+                type="email"
+                placeholder="seuemail@exemplo.com"
+                error={loginForm.formState.errors.email?.message}
+                {...loginForm.register('email')}
+              />
+              <Input
+                id="password"
+                label="Senha"
+                type="password"
+                placeholder="••••••••"
+                error={loginForm.formState.errors.password?.message}
+                {...loginForm.register('password')}
+              />
+              <Button type="submit" fullWidth size="lg" loading={loading}>
+                Entrar
+              </Button>
+            </form>
+
+            <div className="flex flex-col gap-2 items-center">
+              <button
+                onClick={() => setForgotOpen(true)}
+                className="text-xs text-text-secondary hover:text-accent transition-colors font-body"
+              >
+                Esqueci minha senha
+              </button>
+              <button
+                onClick={goToRegister}
+                className="text-xs text-text-secondary hover:text-accent transition-colors font-body"
+              >
+                Não tenho conta — <span className="text-accent">Criar conta</span>
+              </button>
+            </div>
+          </>
+        )}
       </div>
 
       {/* Forgot password inline panel */}

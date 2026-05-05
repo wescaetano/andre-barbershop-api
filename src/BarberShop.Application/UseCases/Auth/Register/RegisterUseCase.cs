@@ -1,7 +1,6 @@
 using BarberShop.Application.UseCases.Auth.SendEmailResetPassword;
 using BarberShop.Communication.Models;
 using BarberShop.Communication.Models.Auth;
-using BarberShop.Domain;
 using BarberShop.Domain.AccessControl;
 using BarberShop.Infra.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -10,13 +9,12 @@ namespace BarberShop.Application.UseCases.Auth.Register
 {
     public class RegisterUseCase : IRegisterUseCase
     {
-        private readonly IBaseRepository<User> _userRepository;
+        private readonly IBaseRepository<Domain.User> _userRepository;
         private readonly IBaseRepository<Profile> _profileRepository;
         private readonly ISendEmailResetPasswordUseCase _sendEmailUseCase;
         private readonly long _defaultClientProfileId;
-
         public RegisterUseCase(
-            IBaseRepository<User> userRepository,
+            IBaseRepository<Domain.User> userRepository,
             IBaseRepository<Profile> profileRepository,
             ISendEmailResetPasswordUseCase sendEmailUseCase,
             IConfiguration configuration)
@@ -46,7 +44,7 @@ namespace BarberShop.Application.UseCases.Auth.Register
             if (profile == null)
                 return FactoryResponse<dynamic>.NotFound("Perfil padrão de cliente não encontrado.");
 
-            var user = new User { Name = model.Name, Email = model.Email };
+            var user = new Domain.User { Name = model.Name, Email = model.Email };
             user.AddCreationDate();
             user.ProfilesUsers.Add(new ProfileUser { ProfileId = _defaultClientProfileId });
 

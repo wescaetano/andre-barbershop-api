@@ -11,18 +11,18 @@ namespace BarberShop.Application.UseCases.User.Create
     public class CreateUserUseCase : ICreateUserUseCase
     {
         private readonly IBaseRepository<Domain.User> _userRepository;
-        private readonly IBaseRelationRepository<ProfileUser> _profileUserRepository;
+        private readonly IBaseRepository<Profile> _profileRepository;
         private readonly IBlobService _blobService;
         private readonly ISendEmailResetPasswordUseCase _sendEmailUseCase;
 
         public CreateUserUseCase(
             IBaseRepository<Domain.User> userRepository,
-            IBaseRelationRepository<ProfileUser> profileUserRepository,
+            IBaseRepository<Profile> profileRepository,
             IBlobService blobService,
             ISendEmailResetPasswordUseCase sendEmailUseCase)
         {
             _userRepository = userRepository;
-            _profileUserRepository = profileUserRepository;
+            _profileRepository = profileRepository;
             _blobService = blobService;
             _sendEmailUseCase = sendEmailUseCase;
         }
@@ -41,7 +41,7 @@ namespace BarberShop.Application.UseCases.User.Create
             if (userExists != null)
                 return FactoryResponse<dynamic>.Conflict("Já existe um usuário cadastrado com este email.");
 
-            var profileExists = await _profileUserRepository.Get(pu => pu.ProfileId == model.AccessProfile);
+            var profileExists = await _profileRepository.Get(p => p.Id == model.AccessProfile);
             if (profileExists == null)
                 return FactoryResponse<dynamic>.NotFound("Perfil de acesso não encontrado.");
 

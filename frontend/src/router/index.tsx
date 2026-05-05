@@ -12,11 +12,20 @@ import AdminDashboard from '../pages/admin/Dashboard'
 import AdminAppointments from '../pages/admin/Appointments'
 import AdminUsers from '../pages/admin/Users'
 import UserDetail from '../pages/admin/UserDetail'
+import { useAuthStore } from '../store/authStore'
+
+function RootRedirect() {
+  const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const role = useAuthStore((s) => s.role)
+  if (!isAuthenticated) return <Navigate to="/book" replace />
+  if (role === 'admin') return <Navigate to="/admin" replace />
+  return <Navigate to="/app" replace />
+}
 
 export const router = createBrowserRouter([
   { path: '/login', element: <Login /> },
   { path: '/book', element: <Book /> },
-  { path: '/', element: <Navigate to="/login" replace /> },
+  { path: '/', element: <RootRedirect /> },
   {
     path: '/app',
     element: <PrivateRoute />,

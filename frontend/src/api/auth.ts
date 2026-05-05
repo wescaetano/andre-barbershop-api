@@ -27,4 +27,9 @@ export const authApi = {
     const { data } = await apiClient.post<ApiResponse>('/auth/reset-password', { newPassword, token })
     return data
   },
+
+  register: async (name: string, email: string) => {
+    const { data } = await apiClient.post<ApiResponse>('/auth/register', { name, email })
+    return data
+  },
 }

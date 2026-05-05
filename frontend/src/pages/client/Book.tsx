@@ -133,7 +133,17 @@ export default function Book() {
         <button onClick={() => step === 0 ? navigate(-1) : setStep(s => s - 1)} className="text-text-secondary hover:text-text-primary">
           <ChevronLeft size={22} />
         </button>
-        <h1 className="font-display font-bold text-2xl uppercase">Agendar</h1>
+        <h1 className="font-display font-bold text-2xl uppercase flex-1">Agendar</h1>
+        {!isAuthenticated && (
+          <div className="flex items-center gap-2">
+            <Button size="sm" variant="ghost" onClick={() => navigate('/login?mode=register', { state: { returnTo: '/book' } })}>
+              Criar conta
+            </Button>
+            <Button size="sm" onClick={() => navigate('/login', { state: { returnTo: '/book' } })}>
+              Entrar
+            </Button>
+          </div>
+        )}
       </div>
 
       {/* Step indicator */}

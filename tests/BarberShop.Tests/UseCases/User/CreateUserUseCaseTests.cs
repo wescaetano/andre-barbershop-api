@@ -13,7 +13,7 @@ namespace BarberShop.Tests.UseCases.User;
 public class CreateUserUseCaseTests
 {
     private readonly IBaseRepository<Domain.User> _userRepo;
-    private readonly IBaseRelationRepository<ProfileUser> _profileUserRepo;
+    private readonly IBaseRepository<Profile> _profileRepo;
     private readonly IBlobService _blobService;
     private readonly ISendEmailResetPasswordUseCase _sendEmailUseCase;
     private readonly CreateUserUseCase _sut;
@@ -21,10 +21,10 @@ public class CreateUserUseCaseTests
     public CreateUserUseCaseTests()
     {
         _userRepo = Substitute.For<IBaseRepository<Domain.User>>();
-        _profileUserRepo = Substitute.For<IBaseRelationRepository<ProfileUser>>();
+        _profileRepo = Substitute.For<IBaseRepository<Profile>>();
         _blobService = Substitute.For<IBlobService>();
         _sendEmailUseCase = Substitute.For<ISendEmailResetPasswordUseCase>();
-        _sut = new CreateUserUseCase(_userRepo, _profileUserRepo, _blobService, _sendEmailUseCase);
+        _sut = new CreateUserUseCase(_userRepo, _profileRepo, _blobService, _sendEmailUseCase);
     }
 
     [Fact]
@@ -60,8 +60,8 @@ public class CreateUserUseCaseTests
         var model = new CreateUserModel { Name = "João", Email = "joao@test.com", AccessProfile = 99 };
         _userRepo.Get(Arg.Any<System.Linq.Expressions.Expression<Func<Domain.User, bool>>>())
             .Returns((Domain.User?)null);
-        _profileUserRepo.Get(Arg.Any<System.Linq.Expressions.Expression<Func<ProfileUser, bool>>>())
-            .Returns((ProfileUser?)null);
+        _profileRepo.Get(Arg.Any<System.Linq.Expressions.Expression<Func<Profile, bool>>>())
+            .Returns((Profile?)null);
 
         var result = await _sut.ExecuteAsync(model);
 
@@ -75,8 +75,8 @@ public class CreateUserUseCaseTests
         var model = new CreateUserModel { Name = "João", Email = "joao@test.com", AccessProfile = 1 };
         _userRepo.Get(Arg.Any<System.Linq.Expressions.Expression<Func<Domain.User, bool>>>())
             .Returns((Domain.User?)null);
-        _profileUserRepo.Get(Arg.Any<System.Linq.Expressions.Expression<Func<ProfileUser, bool>>>())
-            .Returns(new ProfileUser { ProfileId = 1 });
+        _profileRepo.Get(Arg.Any<System.Linq.Expressions.Expression<Func<Profile, bool>>>())
+            .Returns(new Profile { Id = 1 });
         _userRepo.Create(Arg.Any<Domain.User>()).Returns(x => x.ArgAt<Domain.User>(0));
         _sendEmailUseCase.ExecuteAsync(Arg.Any<string>())
             .Returns(FactoryResponse<dynamic>.Success("Email enviado."));
