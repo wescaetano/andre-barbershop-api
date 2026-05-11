@@ -3,9 +3,9 @@ import type { ApiResponse } from '../types/auth'
 import type { Appointment, CreateAppointmentRequest, CancelAppointmentRequest } from '../types/appointment'
 
 export const appointmentsApi = {
-  getAvailableSlots: async (date: string): Promise<string[]> => {
+  getAvailableSlots: async (date: string, serviceId: number): Promise<string[]> => {
     const { data } = await apiClient.get<ApiResponse<string[]>>('/appointment/available-slots', {
-      params: { date },
+      params: { date, serviceId },
     })
     return data.data ?? []
   },

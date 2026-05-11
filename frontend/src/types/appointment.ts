@@ -14,6 +14,7 @@ export interface CreateAppointmentRequest {
   userId: number
   date: string       // "YYYY-MM-DD"
   startTime: string  // "HH:mm"
+  serviceId: number
 }
 
 export interface CancelAppointmentRequest {
