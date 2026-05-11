@@ -11,6 +11,7 @@ import Profile from '../pages/client/Profile'
 import AdminDashboard from '../pages/admin/Dashboard'
 import AdminAppointments from '../pages/admin/Appointments'
 import AdminUsers from '../pages/admin/Users'
+import AdminServices from '../pages/admin/Services'
 import UserDetail from '../pages/admin/UserDetail'
 import { useAuthStore } from '../store/authStore'
 
@@ -51,6 +52,7 @@ export const router = createBrowserRouter([
           { path: 'appointments', element: <AdminAppointments /> },
           { path: 'users', element: <AdminUsers /> },
           { path: 'users/:id', element: <UserDetail /> },
+          { path: 'services', element: <AdminServices /> },
         ],
       },
     ],

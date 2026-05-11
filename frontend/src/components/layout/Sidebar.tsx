@@ -7,6 +7,7 @@ const links = [
   { to: '/admin', label: 'Dashboard', Icon: LayoutDashboard, end: true },
   { to: '/admin/appointments', label: 'Agendamentos', Icon: Calendar, end: false },
   { to: '/admin/users', label: 'Usuários', Icon: Users, end: false },
+  { to: '/admin/services', label: 'Serviços', Icon: Scissors, end: false },
 ]
 
 export function Sidebar() {
