@@ -8,13 +8,16 @@ namespace BarberShop.Application.UseCases.Appointment.GetAvailableSlots
     public class GetAvailableSlotsUseCase : IGetAvailableSlotsUseCase
     {
         private readonly IBaseRepository<Domain.Appointment> _appointmentRepository;
+        private readonly IBaseRepository<Domain.Service> _serviceRepository;
         private static readonly TimeOnly _openTime = new(9, 0);
         private static readonly TimeOnly _closeTime = new(18, 0);
-        private const int SlotMinutes = 30;
 
-        public GetAvailableSlotsUseCase(IBaseRepository<Domain.Appointment> appointmentRepository)
+        public GetAvailableSlotsUseCase(
+            IBaseRepository<Domain.Appointment> appointmentRepository,
+            IBaseRepository<Domain.Service> serviceRepository)
         {
             _appointmentRepository = appointmentRepository;
+            _serviceRepository = serviceRepository;
         }
 
         public async Task<ResponseModel<dynamic>> ExecuteAsync(GetAvailableSlotsModel model)
@@ -27,6 +30,10 @@ namespace BarberShop.Application.UseCases.Appointment.GetAvailableSlots
                 return FactoryResponse<dynamic>.InvalidModel(errors);
             }
 
+            var service = await _serviceRepository.Get(model.ServiceId);
+            if (service == null)
+                return FactoryResponse<dynamic>.NotFound("Serviço não encontrado.");
+
             var dayStart = model.Date.ToDateTime(TimeOnly.MinValue);
             var dayEnd = model.Date.ToDateTime(TimeOnly.MaxValue);
 
@@ -36,23 +43,30 @@ namespace BarberShop.Application.UseCases.Appointment.GetAvailableSlots
 
             var occupiedSlots = occupied.Select(a => TimeOnly.FromDateTime(a.StartTime)).ToHashSet();
 
-            var allSlots = GenerateSlots();
-            var availableSlots = allSlots
-                .Where(s => !occupiedSlots.Contains(s))
+            var allSlots = GenerateSlots(service.DurationMinutes);
+            var now = DateTime.UtcNow;
+            var isToday = model.Date == DateOnly.FromDateTime(now);
+
+            var available = allSlots
+                .Where(s =>
+                {
+                    if (isToday && model.Date.ToDateTime(s) <= now) return false;
+                    return !occupiedSlots.Contains(s);
+                })
                 .Select(s => s.ToString("HH:mm"))
                 .ToList();
 
-            return FactoryResponse<dynamic>.Success(availableSlots);
+            return FactoryResponse<dynamic>.Success(available);
         }
 
-        private static List<TimeOnly> GenerateSlots()
+        private static List<TimeOnly> GenerateSlots(int durationMinutes)
         {
             var slots = new List<TimeOnly>();
             var current = _openTime;
-            while (current < _closeTime)
+            while (current.AddMinutes(durationMinutes) <= _closeTime)
             {
                 slots.Add(current);
-                current = current.AddMinutes(SlotMinutes);
+                current = current.AddMinutes(durationMinutes);
             }
             return slots;
         }

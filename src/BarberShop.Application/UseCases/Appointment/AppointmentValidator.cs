@@ -27,6 +27,9 @@ namespace BarberShop.Application.UseCases.Appointment
             RuleFor(x => x.Date)
                 .Must(d => d >= DateOnly.FromDateTime(DateTime.Today))
                 .WithMessage("A data não pode ser no passado.");
+
+            RuleFor(x => x.ServiceId)
+                .GreaterThan(0).WithMessage("O campo 'serviço' é obrigatório.");
         }
     }
 
