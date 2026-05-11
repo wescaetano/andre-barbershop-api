@@ -120,12 +120,14 @@ export default function Services() {
               </div>
               <div className="flex items-center gap-2">
                 <button
+                  aria-label={`Editar ${s.name}`}
                   onClick={() => openEdit(s)}
                   className="text-text-secondary hover:text-text-primary"
                 >
                   <Edit2 size={16} />
                 </button>
                 <button
+                  aria-label={s.isActive ? 'Desativar' : 'Ativar'}
                   onClick={() => toggleStatus(s)}
                   className={s.isActive ? 'text-accent' : 'text-text-secondary'}
                 >
@@ -137,7 +139,7 @@ export default function Services() {
         </div>
       )}
 
-      <Modal open={modalOpen} onClose={() => setModalOpen(false)} title={editing ? 'Editar Serviço' : 'Novo Serviço'}>
+      <Modal open={modalOpen} onClose={() => { setModalOpen(false); setEditing(null); setForm(emptyForm) }} title={editing ? 'Editar Serviço' : 'Novo Serviço'}>
         <div className="flex flex-col gap-4">
           <Input
             label="Nome"
