@@ -31,4 +31,12 @@ export const appointmentsApi = {
     if (!data.data) throw new Error(data.responseLabel)
     return data.data
   },
+
+  getByBarber: async (barberId: number, from: string, to: string): Promise<Appointment[]> => {
+    const { data } = await apiClient.get<ApiResponse<Appointment[]>>(
+      `/appointment/barber/${barberId}`,
+      { params: { from, to } }
+    )
+    return data.data ?? []
+  },
 }
