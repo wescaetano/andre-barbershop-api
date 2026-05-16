@@ -130,14 +130,17 @@ export default function Book() {
   })
 
   const { mutate: createAppointment, isPending } = useMutation({
-    mutationFn: () =>
-      appointmentsApi.create({
-        userId: userId!,
+    mutationFn: () => {
+      if (!userId || !selectedService || !selectedBarber || !selectedSlot)
+        return Promise.reject(new Error('Dados incompletos.'))
+      return appointmentsApi.create({
+        userId,
         date: dateString,
-        startTime: selectedSlot!,
-        serviceId: selectedService!.id,
-        barberId: selectedBarber!.id,
-      }),
+        startTime: selectedSlot,
+        serviceId: selectedService.id,
+        barberId: selectedBarber.id,
+      })
+    },
     onSuccess: () => {
       toast('Agendamento criado com sucesso!', 'success')
       navigate('/app/appointments')
@@ -155,7 +158,13 @@ export default function Book() {
     <div className="min-h-screen bg-bg-base flex flex-col">
       <div className="bg-bg-surface border-b border-border px-5 pt-10 pb-4 flex items-center gap-3">
         <button
-          onClick={() => step === 0 ? navigate(-1) : setStep(s => s - 1)}
+          onClick={() => {
+            if (step === 0) { navigate(-1); return }
+            if (step <= 1) setSelectedBarber(null)
+            if (step <= 2) setSelectedDate(null)
+            if (step <= 3) setSelectedSlot(null)
+            setStep(s => s - 1)
+          }}
           className="text-text-secondary hover:text-text-primary"
         >
           <ChevronLeft size={22} />
@@ -277,7 +286,7 @@ export default function Book() {
               <Calendar size={16} className="text-accent" />
               <h2 className="font-display font-bold text-sm uppercase tracking-widest text-text-secondary">Escolha a data</h2>
             </div>
-            <DatePicker value={selectedDate} onChange={setSelectedDate} />
+            <DatePicker value={selectedDate} onChange={(d) => { setSelectedDate(d); setSelectedSlot(null) }} />
             <Button fullWidth size="lg" disabled={!selectedDate} onClick={() => setStep(3)}>
               Próximo
             </Button>
