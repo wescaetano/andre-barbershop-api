@@ -30,39 +30,33 @@ namespace BarberShop.Application.UseCases.Barber.Create
         {
             if (string.IsNullOrWhiteSpace(model.Name))
                 return FactoryResponse<dynamic>.InvalidModel("Nome é obrigatório.");
-            if (string.IsNullOrWhiteSpace(model.Email))
-                return FactoryResponse<dynamic>.InvalidModel("E-mail é obrigatório.");
+            if (string.IsNullOrWhiteSpace(model.Email) || !model.Email.Contains('@'))
+                return FactoryResponse<dynamic>.InvalidModel("E-mail inválido.");
             if (string.IsNullOrWhiteSpace(model.DisplayName))
                 return FactoryResponse<dynamic>.InvalidModel("Nome de exibição é obrigatório.");
 
-            var existing = await _userRepo.Get(u => u.Email.ToLower() == model.Email.ToLower());
+            var email = model.Email.Trim().ToLower();
+            var existing = await _userRepo.Get(u => u.Email.ToLower() == email);
             if (existing != null)
                 return FactoryResponse<dynamic>.Conflict("Já existe uma conta com este e-mail.");
 
-            var user = new Domain.User { Name = model.Name, Email = model.Email };
+            var user = new Domain.User { Name = model.Name.Trim(), Email = email };
             user.AddCreationDate();
             user.ProfilesUsers.Add(new ProfileUser { ProfileId = _barberProfileId });
 
-            try
-            {
-                await _userRepo.Create(user);
+            await _userRepo.Create(user);
 
-                var barber = new Domain.Barber
-                {
-                    UserId = user.Id,
-                    DisplayName = model.DisplayName.Trim(),
-                    IsActive = true
-                };
-                barber.AddCreationDate();
-                await _barberRepo.Create(barber);
-
-                await _sendEmail.ExecuteAsync(model.Email);
-                return FactoryResponse<dynamic>.SuccessfulCreation(new { barber.Id, barber.DisplayName, user.Email });
-            }
-            catch (Exception e)
+            var barber = new Domain.Barber
             {
-                return FactoryResponse<dynamic>.BadRequestErroInterno(e.Message);
-            }
+                UserId = user.Id,
+                DisplayName = model.DisplayName.Trim(),
+                IsActive = true
+            };
+            barber.AddCreationDate();
+            await _barberRepo.Create(barber);
+
+            await _sendEmail.ExecuteAsync(email);
+            return FactoryResponse<dynamic>.SuccessfulCreation(new { barber.Id, barber.DisplayName, user.Email });
         }
     }
 }
