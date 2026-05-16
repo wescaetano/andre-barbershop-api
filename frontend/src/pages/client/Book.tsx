@@ -126,7 +126,7 @@ export default function Book() {
   const { data: slots = [], isFetching: loadingSlots, isError: slotsError } = useQuery({
     queryKey: ['slots', dateString, selectedService?.id, selectedBarber?.id],
     queryFn: () => appointmentsApi.getAvailableSlots(dateString, selectedService!.id, selectedBarber!.id),
-    enabled: !!dateString && !!selectedService && !!selectedBarber && step >= 3,
+    enabled: !!dateString && !!selectedService && !!selectedBarber && step === 3,
   })
 
   const { mutate: createAppointment, isPending } = useMutation({
@@ -197,7 +197,7 @@ export default function Book() {
         ))}
       </div>
 
-      <Modal open={step === 4 && !isAuthenticated} onClose={() => setStep(3)} title="Conta necessária">
+      <Modal open={step === 4 && !isAuthenticated} onClose={() => setStep(s => s - 1)} title="Conta necessária">
         <div className="flex flex-col gap-4">
           <p className="text-sm font-body text-text-secondary">
             Para finalizar o agendamento, crie uma conta ou entre na sua.
@@ -226,7 +226,7 @@ export default function Book() {
                 {services.map(s => (
                   <button
                     key={s.id}
-                    onClick={() => setSelectedService(s)}
+                    onClick={() => { setSelectedService(s); setSelectedBarber(null); setSelectedDate(null); setSelectedSlot(null) }}
                     className={`w-full text-left p-4 rounded-sm border transition-colors
                       ${selectedService?.id === s.id
                         ? 'border-accent bg-accent/5'
