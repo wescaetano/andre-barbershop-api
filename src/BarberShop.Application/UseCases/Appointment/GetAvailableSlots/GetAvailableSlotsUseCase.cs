@@ -44,7 +44,7 @@ namespace BarberShop.Application.UseCases.Appointment.GetAvailableSlots
             var occupiedSlots = occupied.Select(a => TimeOnly.FromDateTime(a.StartTime)).ToHashSet();
 
             var allSlots = GenerateSlots(service.DurationMinutes);
-            var now = DateTime.UtcNow;
+            var now = DateTime.Now;
             var isToday = model.Date == DateOnly.FromDateTime(now);
 
             var available = allSlots
