@@ -4,6 +4,7 @@ using BarberShop.Application.Services;
 using BarberShop.Application.UseCases.Appointment.Cancel;
 using BarberShop.Application.UseCases.Appointment.Create;
 using BarberShop.Application.UseCases.Appointment.GetAvailableSlots;
+using BarberShop.Application.UseCases.Appointment.GetByBarber;
 using BarberShop.Application.UseCases.Appointment.GetById;
 using BarberShop.Application.UseCases.Appointment.GetByUser;
 using BarberShop.Application.UseCases.Auth.Login;
@@ -81,6 +82,7 @@ namespace BarberShop.IOC
             services.AddScoped<ICancelAppointmentUseCase, CancelAppointmentUseCase>();
             services.AddScoped<IGetUserAppointmentsUseCase, GetUserAppointmentsUseCase>();
             services.AddScoped<IGetAppointmentByIdUseCase, GetAppointmentByIdUseCase>();
+            services.AddScoped<IGetBarberAppointmentsUseCase, GetBarberAppointmentsUseCase>();
 
             // Payment use cases
             services.AddScoped<ICreatePaymentUseCase, CreatePaymentUseCase>();

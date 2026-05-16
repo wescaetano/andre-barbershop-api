@@ -2,6 +2,7 @@ using BarberShop.Api.Authorization;
 using BarberShop.Application.UseCases.Appointment.Cancel;
 using BarberShop.Application.UseCases.Appointment.Create;
 using BarberShop.Application.UseCases.Appointment.GetAvailableSlots;
+using BarberShop.Application.UseCases.Appointment.GetByBarber;
 using BarberShop.Application.UseCases.Appointment.GetById;
 using BarberShop.Application.UseCases.Appointment.GetByUser;
 using BarberShop.Communication.Models.Appointment;
@@ -19,6 +20,7 @@ namespace BarberShop.Api.Controllers
         private readonly ICancelAppointmentUseCase _cancelAppointmentUseCase;
         private readonly IGetUserAppointmentsUseCase _getUserAppointmentsUseCase;
         private readonly IGetAppointmentByIdUseCase _getAppointmentByIdUseCase;
+        private readonly IGetBarberAppointmentsUseCase _getBarberAppointmentsUseCase;
 
         /// <summary></summary>
         public AppointmentController(
@@ -26,13 +28,15 @@ namespace BarberShop.Api.Controllers
             IGetAvailableSlotsUseCase getAvailableSlotsUseCase,
             ICancelAppointmentUseCase cancelAppointmentUseCase,
             IGetUserAppointmentsUseCase getUserAppointmentsUseCase,
-            IGetAppointmentByIdUseCase getAppointmentByIdUseCase)
+            IGetAppointmentByIdUseCase getAppointmentByIdUseCase,
+            IGetBarberAppointmentsUseCase getBarberAppointmentsUseCase)
         {
             _createAppointmentUseCase = createAppointmentUseCase;
             _getAvailableSlotsUseCase = getAvailableSlotsUseCase;
             _cancelAppointmentUseCase = cancelAppointmentUseCase;
             _getUserAppointmentsUseCase = getUserAppointmentsUseCase;
             _getAppointmentByIdUseCase = getAppointmentByIdUseCase;
+            _getBarberAppointmentsUseCase = getBarberAppointmentsUseCase;
         }
 
         /// <summary>Cria um novo agendamento para o usuário</summary>
@@ -77,6 +81,17 @@ namespace BarberShop.Api.Controllers
         public async Task<IActionResult> GetById([FromRoute] long id)
         {
             var result = await _getAppointmentByIdUseCase.ExecuteAsync(id);
+            return Result(result);
+        }
+
+        /// <summary>Lista agendamentos de um barbeiro em um intervalo de datas</summary>
+        [HttpGet("barber/{barberId:long}")]
+        public async Task<IActionResult> GetByBarber(
+            [FromRoute] long barberId,
+            [FromQuery] DateTime from,
+            [FromQuery] DateTime to)
+        {
+            var result = await _getBarberAppointmentsUseCase.ExecuteAsync(barberId, from, to);
             return Result(result);
         }
     }
