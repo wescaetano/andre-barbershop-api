@@ -1,6 +1,7 @@
 import { useQuery } from '@tanstack/react-query'
-import { Calendar, Clock } from 'lucide-react'
+import { Calendar, Clock, Users } from 'lucide-react'
 import { appointmentsApi } from '../../api/appointments'
+import { barbersApi } from '../../api/barbers'
 import { AppointmentBadge, Badge } from '../../components/ui/Badge'
 import { Spinner } from '../../components/ui/Spinner'
 import { useAuthStore } from '../../store/authStore'
@@ -37,19 +38,34 @@ function StatCard({ label, value, Icon }: { label: string; value: number; Icon: 
 }
 
 export default function AdminDashboard() {
-  const userId = useAuthStore((s) => s.userId)
   const userName = useAuthStore((s) => s.userName)
   const role = useAuthStore((s) => s.role)
 
-  const { data: appointments = [], isLoading } = useQuery({
-    queryKey: ['admin-appointments'],
-    queryFn: () => appointmentsApi.getByUser(userId!),
-    enabled: !!userId,
+  const now = new Date()
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate()).toISOString()
+  const weekEnd = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 7).toISOString()
+
+  const { data: barbers = [], isLoading: barbersLoading } = useQuery({
+    queryKey: ['admin-barbers-active'],
+    queryFn: () => barbersApi.getActive(),
   })
 
-  const todayCount = appointments.filter((a) => isToday(a.startTime) && a.status !== 2).length
-  const weekCount = appointments.filter((a) => isThisWeek(a.startTime) && a.status !== 2).length
-  const recent = [...appointments]
+  const { data: allAppointments = [], isLoading: appointmentsLoading } = useQuery({
+    queryKey: ['admin-all-appointments', todayStart, weekEnd, barbers.map((b) => b.id)],
+    queryFn: async () => {
+      const results = await Promise.all(
+        barbers.map((b) => appointmentsApi.getByBarber(b.id, todayStart, weekEnd))
+      )
+      return results.flat()
+    },
+    enabled: barbers.length > 0,
+  })
+
+  const isLoading = barbersLoading || appointmentsLoading
+
+  const todayCount = allAppointments.filter((a) => isToday(a.startTime) && a.status !== 2).length
+  const weekCount = allAppointments.filter((a) => isThisWeek(a.startTime) && a.status !== 2).length
+  const recent = [...allAppointments]
     .sort((a, b) => new Date(b.creationDate).getTime() - new Date(a.creationDate).getTime())
     .slice(0, 10)
 
@@ -78,9 +94,10 @@ export default function AdminDashboard() {
         <div className="flex justify-center py-10"><Spinner /></div>
       ) : (
         <>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
             <StatCard label="Agendamentos hoje" value={todayCount} Icon={Calendar} />
             <StatCard label="Esta semana" value={weekCount} Icon={Clock} />
+            <StatCard label="Barbeiros ativos" value={barbers.length} Icon={Users} />
           </div>
 
           <section>
