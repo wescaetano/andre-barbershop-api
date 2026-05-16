@@ -15,6 +15,10 @@ using BarberShop.Application.UseCases.Auth.SocialLogin;
 using BarberShop.Application.UseCases.Payment.Create;
 using BarberShop.Application.UseCases.Payment.GetHistory;
 using BarberShop.Application.UseCases.Payment.ProcessWebhook;
+using BarberShop.Application.UseCases.Barber.ChangeStatus;
+using BarberShop.Application.UseCases.Barber.Create;
+using BarberShop.Application.UseCases.Barber.GetAll;
+using BarberShop.Application.UseCases.Barber.Update;
 using BarberShop.Application.UseCases.Service.ChangeStatus;
 using BarberShop.Application.UseCases.Service.Create;
 using BarberShop.Application.UseCases.Service.GetAll;
@@ -83,6 +87,12 @@ namespace BarberShop.IOC
             services.AddScoped<ICreateServiceUseCase, CreateServiceUseCase>();
             services.AddScoped<IUpdateServiceUseCase, UpdateServiceUseCase>();
             services.AddScoped<IChangeServiceStatusUseCase, ChangeServiceStatusUseCase>();
+
+            // Barber use cases
+            services.AddScoped<IGetBarbersUseCase, GetBarbersUseCase>();
+            services.AddScoped<ICreateBarberUseCase, CreateBarberUseCase>();
+            services.AddScoped<IUpdateBarberUseCase, UpdateBarberUseCase>();
+            services.AddScoped<IChangeBarberStatusUseCase, ChangeBarberStatusUseCase>();
 
             return services;
         }
