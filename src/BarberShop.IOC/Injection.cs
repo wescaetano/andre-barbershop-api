@@ -29,6 +29,8 @@ using BarberShop.Application.UseCases.User.Delete;
 using BarberShop.Application.UseCases.User.GetById;
 using BarberShop.Application.UseCases.User.GetPaginated;
 using BarberShop.Application.UseCases.User.Update;
+using BarberShop.Application.UseCases.WorkingHours.GetByBarber;
+using BarberShop.Application.UseCases.WorkingHours.Upsert;
 using BarberShop.Infra.Interfaces;
 using BarberShop.Infra.Repositories;
 using Microsoft.Extensions.DependencyInjection;
@@ -93,6 +95,10 @@ namespace BarberShop.IOC
             services.AddScoped<ICreateBarberUseCase, CreateBarberUseCase>();
             services.AddScoped<IUpdateBarberUseCase, UpdateBarberUseCase>();
             services.AddScoped<IChangeBarberStatusUseCase, ChangeBarberStatusUseCase>();
+
+            // WorkingHours use cases
+            services.AddScoped<IGetWorkingHoursByBarberUseCase, GetWorkingHoursByBarberUseCase>();
+            services.AddScoped<IUpsertWorkingHoursUseCase, UpsertWorkingHoursUseCase>();
 
             return services;
         }
