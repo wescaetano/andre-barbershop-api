@@ -19,6 +19,7 @@ import UserDetail from '../pages/admin/UserDetail'
 import BarberDashboard from '../pages/barber/Dashboard'
 import BarberAgenda from '../pages/barber/Agenda'
 import BarberWorkingHours from '../pages/barber/WorkingHours'
+import BarberBlocks from '../pages/barber/Blocks'
 import { useAuthStore } from '../store/authStore'
 
 function RootRedirect() {
@@ -75,6 +76,7 @@ export const router = createBrowserRouter([
           { index: true, element: <BarberDashboard /> },
           { path: 'agenda', element: <BarberAgenda /> },
           { path: 'working-hours', element: <BarberWorkingHours /> },
+          { path: 'blocks', element: <BarberBlocks /> },
         ],
       },
     ],

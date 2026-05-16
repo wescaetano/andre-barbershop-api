@@ -1,12 +1,13 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Calendar, Clock, LogOut, Scissors, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Calendar, Clock, CalendarX, LogOut, Scissors, ChevronLeft, ChevronRight } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
 const links = [
   { to: '/barber', label: 'Dashboard', Icon: LayoutDashboard, end: true },
   { to: '/barber/agenda', label: 'Agenda', Icon: Calendar, end: false },
   { to: '/barber/working-hours', label: 'Horários', Icon: Clock, end: false },
+  { to: '/barber/blocks', label: 'Bloqueios', Icon: CalendarX, end: false },
 ]
 
 export function BarberSidebar() {
