@@ -29,6 +29,9 @@ using BarberShop.Application.UseCases.User.Delete;
 using BarberShop.Application.UseCases.User.GetById;
 using BarberShop.Application.UseCases.User.GetPaginated;
 using BarberShop.Application.UseCases.User.Update;
+using BarberShop.Application.UseCases.ScheduleBlock.Create;
+using BarberShop.Application.UseCases.ScheduleBlock.Delete;
+using BarberShop.Application.UseCases.ScheduleBlock.GetByBarber;
 using BarberShop.Application.UseCases.WorkingHours.GetByBarber;
 using BarberShop.Application.UseCases.WorkingHours.Upsert;
 using BarberShop.Infra.Interfaces;
@@ -99,6 +102,11 @@ namespace BarberShop.IOC
             // WorkingHours use cases
             services.AddScoped<IGetWorkingHoursByBarberUseCase, GetWorkingHoursByBarberUseCase>();
             services.AddScoped<IUpsertWorkingHoursUseCase, UpsertWorkingHoursUseCase>();
+
+            // ScheduleBlock use cases
+            services.AddScoped<IGetScheduleBlocksByBarberUseCase, GetScheduleBlocksByBarberUseCase>();
+            services.AddScoped<ICreateScheduleBlockUseCase, CreateScheduleBlockUseCase>();
+            services.AddScoped<IDeleteScheduleBlockUseCase, DeleteScheduleBlockUseCase>();
 
             return services;
         }
