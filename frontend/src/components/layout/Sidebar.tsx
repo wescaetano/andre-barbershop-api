@@ -1,6 +1,6 @@
 import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
-import { LayoutDashboard, Calendar, Users, LogOut, Scissors, ChevronLeft, ChevronRight } from 'lucide-react'
+import { LayoutDashboard, Calendar, Users, LogOut, Scissors, ChevronLeft, ChevronRight, User2 } from 'lucide-react'
 import { useAuth } from '../../hooks/useAuth'
 
 const links = [
@@ -8,6 +8,7 @@ const links = [
   { to: '/admin/appointments', label: 'Agendamentos', Icon: Calendar, end: false },
   { to: '/admin/users', label: 'Usuários', Icon: Users, end: false },
   { to: '/admin/services', label: 'Serviços', Icon: Scissors, end: false },
+  { to: '/admin/barbers', label: 'Barbeiros', Icon: User2, end: false },
 ]
 
 export function Sidebar() {

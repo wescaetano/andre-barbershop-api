@@ -14,6 +14,7 @@ import AdminDashboard from '../pages/admin/Dashboard'
 import AdminAppointments from '../pages/admin/Appointments'
 import AdminUsers from '../pages/admin/Users'
 import AdminServices from '../pages/admin/Services'
+import AdminBarbers from '../pages/admin/Barbers'
 import UserDetail from '../pages/admin/UserDetail'
 import BarberDashboard from '../pages/barber/Dashboard'
 import BarberAgenda from '../pages/barber/Agenda'
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
           { path: 'users', element: <AdminUsers /> },
           { path: 'users/:id', element: <UserDetail /> },
           { path: 'services', element: <AdminServices /> },
+          { path: 'barbers', element: <AdminBarbers /> },
         ],
       },
     ],
