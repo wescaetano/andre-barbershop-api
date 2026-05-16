@@ -30,6 +30,9 @@ namespace BarberShop.Application.UseCases.Appointment
 
             RuleFor(x => x.ServiceId)
                 .GreaterThan(0).WithMessage("O campo 'serviço' é obrigatório.");
+
+            RuleFor(x => x.BarberId)
+                .GreaterThan(0).WithMessage("O campo 'barbeiro' é obrigatório.");
         }
     }
 

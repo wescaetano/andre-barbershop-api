@@ -46,10 +46,13 @@ namespace BarberShop.Api.Controllers
         /// <summary>Retorna os horários disponíveis em uma data para um serviço</summary>
         [AllowAnonymous]
         [HttpGet("available-slots")]
-        public async Task<IActionResult> GetAvailableSlots([FromQuery] DateOnly date, [FromQuery] long serviceId)
+        public async Task<IActionResult> GetAvailableSlots(
+            [FromQuery] DateOnly date,
+            [FromQuery] long barberId,
+            [FromQuery] long serviceId)
         {
             var result = await _getAvailableSlotsUseCase.ExecuteAsync(
-                new GetAvailableSlotsModel { Date = date, ServiceId = serviceId });
+                new GetAvailableSlotsModel { Date = date, BarberId = barberId, ServiceId = serviceId });
             return Result(result);
         }
 
