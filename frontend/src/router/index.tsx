@@ -11,6 +11,7 @@ import Book from '../pages/client/Book'
 import ClientAppointments from '../pages/client/Appointments'
 import Profile from '../pages/client/Profile'
 import AdminDashboard from '../pages/admin/Dashboard'
+import AdminSchedule from '../pages/admin/Schedule'
 import AdminAppointments from '../pages/admin/Appointments'
 import AdminUsers from '../pages/admin/Users'
 import AdminServices from '../pages/admin/Services'
@@ -58,6 +59,7 @@ export const router = createBrowserRouter([
         element: <AdminLayout />,
         children: [
           { index: true, element: <AdminDashboard /> },
+          { path: 'schedule', element: <AdminSchedule /> },
           { path: 'appointments', element: <AdminAppointments /> },
           { path: 'users', element: <AdminUsers /> },
           { path: 'users/:id', element: <UserDetail /> },
