@@ -18,6 +18,7 @@ import AdminBarbers from '../pages/admin/Barbers'
 import UserDetail from '../pages/admin/UserDetail'
 import BarberDashboard from '../pages/barber/Dashboard'
 import BarberAgenda from '../pages/barber/Agenda'
+import BarberSchedule from '../pages/barber/Schedule'
 import BarberWorkingHours from '../pages/barber/WorkingHours'
 import BarberBlocks from '../pages/barber/Blocks'
 import { useAuthStore } from '../store/authStore'
@@ -75,6 +76,7 @@ export const router = createBrowserRouter([
         children: [
           { index: true, element: <BarberDashboard /> },
           { path: 'agenda', element: <BarberAgenda /> },
+          { path: 'schedule', element: <BarberSchedule /> },
           { path: 'working-hours', element: <BarberWorkingHours /> },
           { path: 'blocks', element: <BarberBlocks /> },
         ],

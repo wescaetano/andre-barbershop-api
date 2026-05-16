@@ -5,7 +5,7 @@ import { useAuth } from '../../hooks/useAuth'
 
 const links = [
   { to: '/barber', label: 'Dashboard', Icon: LayoutDashboard, end: true },
-  { to: '/barber/agenda', label: 'Agenda', Icon: Calendar, end: false },
+  { to: '/barber/schedule', label: 'Agenda', Icon: Calendar, end: false },
   { to: '/barber/working-hours', label: 'Horários', Icon: Clock, end: false },
   { to: '/barber/blocks', label: 'Bloqueios', Icon: CalendarX, end: false },
 ]
