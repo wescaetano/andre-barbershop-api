@@ -15,6 +15,7 @@ export interface CreateAppointmentRequest {
   date: string       // "YYYY-MM-DD"
   startTime: string  // "HH:mm"
   serviceId: number
+  barberId: number
 }
 
 export interface CancelAppointmentRequest {
