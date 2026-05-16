@@ -26,7 +26,8 @@ namespace BarberShop.Infra.DataAccess
                 new Module { Id = 2, Name = "Auth",         Visualize = true, Edit = true, Register = true, Inactivate = true, Exclude = true },
                 new Module { Id = 3, Name = "SendEmail",    Visualize = true, Edit = true, Register = true, Inactivate = true, Exclude = true },
                 new Module { Id = 4, Name = "Appointments", Visualize = true, Edit = true, Register = true, Inactivate = true, Exclude = true },
-                new Module { Id = 5, Name = "Payments",     Visualize = true, Edit = true, Register = true, Inactivate = true, Exclude = true }
+                new Module { Id = 5, Name = "Payments",     Visualize = true, Edit = true, Register = true, Inactivate = true, Exclude = true },
+                new Module { Id = 6, Name = "Barber",       Visualize = true, Edit = true, Register = true, Inactivate = true, Exclude = true }
             );
         }
 
@@ -34,7 +35,8 @@ namespace BarberShop.Infra.DataAccess
         {
             modelBuilder.Entity<Profile>().HasData(
                 new Profile { Id = 1, Name = "Admin",   Status = EProfileStatus.Ativo },
-                new Profile { Id = 2, Name = "Cliente", Status = EProfileStatus.Ativo }
+                new Profile { Id = 2, Name = "Cliente",  Status = EProfileStatus.Ativo },
+                new Profile { Id = 3, Name = "Barbeiro", Status = EProfileStatus.Ativo }
             );
         }
 
@@ -54,6 +56,12 @@ namespace BarberShop.Infra.DataAccess
                 new ProfileModule { ProfileId = 2, ModuleId = 2, Visualize = true, Edit = false, Register = true,  Inactivate = false, Exclude = false },
                 new ProfileModule { ProfileId = 2, ModuleId = 4, Visualize = true, Edit = false, Register = true,  Inactivate = true,  Exclude = false },
                 new ProfileModule { ProfileId = 2, ModuleId = 5, Visualize = true, Edit = false, Register = true,  Inactivate = false, Exclude = false }
+            );
+
+            // Barbeiro — acesso à própria agenda e ao módulo Barber
+            modelBuilder.Entity<ProfileModule>().HasData(
+                new ProfileModule { ProfileId = 3, ModuleId = 6, Visualize = true, Edit = true, Register = true, Inactivate = true, Exclude = true },
+                new ProfileModule { ProfileId = 3, ModuleId = 4, Visualize = true, Edit = false, Register = true, Inactivate = true, Exclude = false }
             );
         }
 
