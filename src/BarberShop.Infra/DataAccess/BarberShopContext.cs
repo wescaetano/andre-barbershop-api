@@ -22,6 +22,8 @@ namespace BarberShop.Infra.DataAccess
         public DbSet<Payment> Payments { get; set; } = null!;
         public DbSet<Service> Services { get; set; } = null!;
         public DbSet<Barber> Barbers { get; set; } = null!;
+        public DbSet<WorkingHours> WorkingHours { get; set; } = null!;
+        public DbSet<ScheduleBlock> ScheduleBlocks { get; set; } = null!;
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
