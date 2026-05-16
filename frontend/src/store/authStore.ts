@@ -37,7 +37,11 @@ export const useAuthStore = create<AuthState>()(
           accessToken: data.accessToken,
           refreshToken: data.refreshToken,
           modulesAssembled: data.modulesAssembled,
-          role: data.modulesAssembled.moduleProfileUser.some((m) => m.name === 'Users') ? 'admin' : 'client',
+          role: data.modulesAssembled.moduleProfileUser.some((m) => m.name === 'Users')
+            ? 'admin'
+            : data.modulesAssembled.moduleProfileUser.some((m) => m.name === 'Barber')
+              ? 'barber'
+              : 'client',
           isAuthenticated: true,
         }),
       logout: () =>
