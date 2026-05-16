@@ -1,8 +1,10 @@
 import { createBrowserRouter, Navigate } from 'react-router-dom'
 import { PrivateRoute } from './PrivateRoute'
 import { AdminRoute } from './AdminRoute'
+import { BarberRoute } from './BarberRoute'
 import { ClientLayout } from '../components/layout/ClientLayout'
 import { AdminLayout } from '../components/layout/AdminLayout'
+import { BarberLayout } from '../components/layout/BarberLayout'
 import Login from '../pages/Login'
 import ClientHome from '../pages/client/Home'
 import Book from '../pages/client/Book'
@@ -13,6 +15,8 @@ import AdminAppointments from '../pages/admin/Appointments'
 import AdminUsers from '../pages/admin/Users'
 import AdminServices from '../pages/admin/Services'
 import UserDetail from '../pages/admin/UserDetail'
+import BarberDashboard from '../pages/barber/Dashboard'
+import BarberAgenda from '../pages/barber/Agenda'
 import { useAuthStore } from '../store/authStore'
 
 function RootRedirect() {
@@ -20,6 +24,7 @@ function RootRedirect() {
   const role = useAuthStore((s) => s.role)
   if (!isAuthenticated) return <Navigate to="/book" replace />
   if (role === 'admin') return <Navigate to="/admin" replace />
+  if (role === 'barber') return <Navigate to="/barber" replace />
   return <Navigate to="/app" replace />
 }
 
@@ -53,6 +58,19 @@ export const router = createBrowserRouter([
           { path: 'users', element: <AdminUsers /> },
           { path: 'users/:id', element: <UserDetail /> },
           { path: 'services', element: <AdminServices /> },
+        ],
+      },
+    ],
+  },
+  {
+    path: '/barber',
+    element: <BarberRoute />,
+    children: [
+      {
+        element: <BarberLayout />,
+        children: [
+          { index: true, element: <BarberDashboard /> },
+          { path: 'agenda', element: <BarberAgenda /> },
         ],
       },
     ],
