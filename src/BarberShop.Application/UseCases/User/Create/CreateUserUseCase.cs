@@ -2,6 +2,7 @@ using BarberShop.Application.Interfaces;
 using BarberShop.Application.Models.User;
 using BarberShop.Application.UseCases.Auth.SendEmailResetPassword;
 using BarberShop.Communication.Models;
+using BarberShop.Communication.Utils;
 using BarberShop.Domain;
 using BarberShop.Domain.AccessControl;
 using BarberShop.Infra.Interfaces;
@@ -48,7 +49,9 @@ namespace BarberShop.Application.UseCases.User.Create
             var user = new Domain.User
             {
                 Name = model.Name,
-                Email = model.Email
+                Email = model.Email,
+                Password = HashHelper.HashGeneration(model.Password),
+                ProfilesUsers = new List<ProfileUser>() { new ProfileUser { ProfileId = model.AccessProfile } }
             };
             user.AddCreationDate();
 
@@ -58,12 +61,9 @@ namespace BarberShop.Application.UseCases.User.Create
                 user.ImageUrl = await _blobService.UploadBase64Async(model.ImageBase64, fileName);
             }
 
-            user.ProfilesUsers.Add(new ProfileUser { ProfileId = model.AccessProfile });
-
             try
             {
                 await _userRepository.Create(user);
-                await _sendEmailUseCase.ExecuteAsync(model.Email);
                 return FactoryResponse<dynamic>.SuccessfulCreation("Usuário cadastrado com sucesso.");
             }
             catch (Exception e)

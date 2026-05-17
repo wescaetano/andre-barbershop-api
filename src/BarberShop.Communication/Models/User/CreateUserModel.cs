@@ -13,6 +13,8 @@ namespace BarberShop.Application.Models.User
         public string Name { get; set; } = null!;
         [Required(ErrorMessage = "O campo 'email' é obrigatório!")]
         public string Email { get; set; } = null!;
+        [Required(ErrorMessage = "O campo 'password' é obrigatório!")]
+        public string Password { get; set; } = null!;
         public string? ImageBase64 { get; set; }
         [Required(ErrorMessage = "O campo 'accessProfile' é obrigatório!")]
         public long AccessProfile { get; set; }

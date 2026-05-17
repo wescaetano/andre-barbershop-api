@@ -1,6 +1,6 @@
-using BarberShop.Application.UseCases.Auth.SendEmailResetPassword;
 using BarberShop.Communication.Models;
 using BarberShop.Communication.Models.Auth;
+using BarberShop.Communication.Utils;
 using BarberShop.Domain.AccessControl;
 using BarberShop.Infra.Interfaces;
 using Microsoft.Extensions.Configuration;
@@ -11,17 +11,15 @@ namespace BarberShop.Application.UseCases.Auth.Register
     {
         private readonly IBaseRepository<Domain.User> _userRepository;
         private readonly IBaseRepository<Profile> _profileRepository;
-        private readonly ISendEmailResetPasswordUseCase _sendEmailUseCase;
         private readonly long _defaultClientProfileId;
+
         public RegisterUseCase(
             IBaseRepository<Domain.User> userRepository,
             IBaseRepository<Profile> profileRepository,
-            ISendEmailResetPasswordUseCase sendEmailUseCase,
             IConfiguration configuration)
         {
             _userRepository = userRepository;
             _profileRepository = profileRepository;
-            _sendEmailUseCase = sendEmailUseCase;
             _defaultClientProfileId = configuration.GetValue<long>("DefaultClientProfileId");
         }
 
@@ -32,6 +30,9 @@ namespace BarberShop.Application.UseCases.Auth.Register
 
             if (string.IsNullOrWhiteSpace(model.Email))
                 return FactoryResponse<dynamic>.InvalidModel("O campo 'email' é obrigatório.");
+
+            if (string.IsNullOrWhiteSpace(model.Password) || model.Password.Length < 6)
+                return FactoryResponse<dynamic>.InvalidModel("A senha deve ter no mínimo 6 caracteres.");
 
             if (_defaultClientProfileId == 0)
                 return FactoryResponse<dynamic>.BadRequestErroInterno("Perfil padrão de cliente não configurado.");
@@ -44,15 +45,19 @@ namespace BarberShop.Application.UseCases.Auth.Register
             if (profile == null)
                 return FactoryResponse<dynamic>.NotFound("Perfil padrão de cliente não encontrado.");
 
-            var user = new Domain.User { Name = model.Name, Email = model.Email };
+            var user = new Domain.User
+            {
+                Name = model.Name.Trim(),
+                Email = model.Email.Trim().ToLower(),
+                Password = HashHelper.HashGeneration(model.Password),
+            };
             user.AddCreationDate();
             user.ProfilesUsers.Add(new ProfileUser { ProfileId = _defaultClientProfileId });
 
             try
             {
                 await _userRepository.Create(user);
-                await _sendEmailUseCase.ExecuteAsync(model.Email);
-                return FactoryResponse<dynamic>.SuccessfulCreation("Conta criada! Verifique seu e-mail para definir sua senha.");
+                return FactoryResponse<dynamic>.SuccessfulCreation("Conta criada com sucesso!");
             }
             catch (Exception e)
             {

@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
 import { ChevronLeft, Calendar, Clock, Check, Scissors, User } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
@@ -103,6 +103,10 @@ export default function Book() {
   const { getMessage } = useApiError()
   const userId = useAuthStore((s) => s.userId)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const role = useAuthStore((s) => s.role)
+
+  if (isAuthenticated && role === 'admin') return <Navigate to="/admin" replace />
+  if (isAuthenticated && role === 'barber') return <Navigate to="/barber" replace />
 
   const [step, setStep] = useState(0)
   const [selectedService, setSelectedService] = useState<Service | null>(null)

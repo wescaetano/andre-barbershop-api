@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace BarberShop.Api.Controllers
 {
     /// <summary>Horários de funcionamento por barbeiro</summary>
-    [APIAuthorization("Barber-V", "Barber-E", "Users-V", "Users-E")]
     public class WorkingHoursController : BaseController
     {
         private readonly IGetWorkingHoursByBarberUseCase _get;
@@ -23,11 +22,13 @@ namespace BarberShop.Api.Controllers
         /// <summary>Retorna horários de funcionamento de um barbeiro (público)</summary>
         [AllowAnonymous]
         [HttpGet("{barberId:long}")]
+        //[APIAuthorization("Barber-V")]
         public async Task<IActionResult> GetByBarber([FromRoute] long barberId)
             => Result(await _get.ExecuteAsync(barberId));
 
         /// <summary>Salva horários de funcionamento (cria ou atualiza)</summary>
         [HttpPut]
+        //[APIAuthorization("Barber-E")]
         public async Task<IActionResult> Upsert([FromBody] UpsertWorkingHoursModel model)
             => Result(await _upsert.ExecuteAsync(model));
     }

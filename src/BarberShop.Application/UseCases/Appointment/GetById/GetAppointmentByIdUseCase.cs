@@ -33,7 +33,7 @@ namespace BarberShop.Application.UseCases.Appointment.GetById
                 appointment.Id,
                 StartTime = appointment.StartTime.ToString("yyyy-MM-dd HH:mm"),
                 EndTime   = appointment.EndTime.ToString("yyyy-MM-dd HH:mm"),
-                Status    = appointment.Status.ToString(),
+                Status    = (int)appointment.Status,
                 appointment.CreationDate,
                 User = new
                 {
@@ -46,7 +46,7 @@ namespace BarberShop.Application.UseCases.Appointment.GetById
                     appointment.Payment.Id,
                     appointment.Payment.Amount,
                     appointment.Payment.ExternalReference,
-                    Status = appointment.Payment.Status.ToString()
+                    Status = (int)appointment.Payment.Status
                 }
             });
         }

@@ -14,6 +14,7 @@ export interface User {
 export interface CreateUserRequest {
   name: string
   email: string
+  password: string
   imageBase64?: string
   accessProfile: number
 }

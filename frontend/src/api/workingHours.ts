@@ -9,7 +9,16 @@ export const workingHoursApi = {
   },
 
   upsert: async (barberId: number, days: WorkingHoursDay[]) => {
-    const { data } = await apiClient.put<ApiResponse<null>>('/workinghours', { barberId, days })
+    const toTimeString = (t: string) => (t.length === 5 ? `${t}:00` : t)
+    const payload = {
+      barberId,
+      days: days.map((d) => ({
+        ...d,
+        openTime: toTimeString(d.openTime),
+        closeTime: toTimeString(d.closeTime),
+      })),
+    }
+    const { data } = await apiClient.put<ApiResponse<null>>('/workinghours', payload)
     if (!data.success) throw new Error(data.responseLabel)
     return data
   },

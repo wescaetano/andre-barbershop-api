@@ -12,7 +12,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace BarberShop.Api.Controllers
 {
     /// <summary>Gerenciamento de agendamentos</summary>
-    [APIAuthorization("Appointments-C", "Appointments-E", "Appointments-V", "Appointments-I")]
     public class AppointmentController : BaseController
     {
         private readonly ICreateAppointmentUseCase _createAppointmentUseCase;
@@ -41,6 +40,7 @@ namespace BarberShop.Api.Controllers
 
         /// <summary>Cria um novo agendamento para o usuário</summary>
         [HttpPost]
+        //[APIAuthorization("Appointments-C")]
         public async Task<IActionResult> Create([FromBody] CreateAppointmentModel model)
         {
             var result = await _createAppointmentUseCase.ExecuteAsync(model);
@@ -50,6 +50,7 @@ namespace BarberShop.Api.Controllers
         /// <summary>Retorna os horários disponíveis em uma data para um serviço</summary>
         [AllowAnonymous]
         [HttpGet("available-slots")]
+        //[APIAuthorization("Appointments-V")]
         public async Task<IActionResult> GetAvailableSlots(
             [FromQuery] DateOnly date,
             [FromQuery] long barberId,
@@ -62,6 +63,7 @@ namespace BarberShop.Api.Controllers
 
         /// <summary>Cancela um agendamento. Apenas o dono pode cancelar e somente no status WaitingPayment</summary>
         [HttpPatch("cancel")]
+        //[APIAuthorization("Appointments-E")]
         public async Task<IActionResult> Cancel([FromBody] CancelAppointmentModel model)
         {
             var result = await _cancelAppointmentUseCase.ExecuteAsync(model);
@@ -70,6 +72,7 @@ namespace BarberShop.Api.Controllers
 
         /// <summary>Lista todos os agendamentos de um usuário, do mais recente ao mais antigo, incluindo pagamento</summary>
         [HttpGet("user/{userId:long}")]
+        //[APIAuthorization("Appointments-C")]
         public async Task<IActionResult> GetByUser([FromRoute] long userId)
         {
             var result = await _getUserAppointmentsUseCase.ExecuteAsync(userId);
@@ -78,6 +81,7 @@ namespace BarberShop.Api.Controllers
 
         /// <summary>Busca um agendamento pelo ID, incluindo usuário e dados de pagamento</summary>
         [HttpGet("{id:long}")]
+        //[APIAuthorization("Appointments-C")]
         public async Task<IActionResult> GetById([FromRoute] long id)
         {
             var result = await _getAppointmentByIdUseCase.ExecuteAsync(id);
@@ -86,6 +90,7 @@ namespace BarberShop.Api.Controllers
 
         /// <summary>Lista agendamentos de um barbeiro em um intervalo de datas</summary>
         [HttpGet("barber/{barberId:long}")]
+        //[APIAuthorization("Appointments-C")]
         public async Task<IActionResult> GetByBarber(
             [FromRoute] long barberId,
             [FromQuery] DateTime from,

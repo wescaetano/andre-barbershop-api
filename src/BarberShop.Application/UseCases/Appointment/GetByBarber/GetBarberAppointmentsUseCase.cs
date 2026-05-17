@@ -25,7 +25,7 @@ namespace BarberShop.Application.UseCases.Appointment.GetByBarber
                     a.ServiceId,
                     a.StartTime,
                     a.EndTime,
-                    Status = a.Status.ToString(),
+                    Status = (int)a.Status,
                     a.CreationDate
                 }).ToList();
 

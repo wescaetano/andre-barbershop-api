@@ -8,6 +8,7 @@ export interface Barber {
 export interface CreateBarberRequest {
   name: string
   email: string
+  password: string
   displayName: string
 }
 

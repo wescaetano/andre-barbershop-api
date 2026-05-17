@@ -53,7 +53,7 @@ namespace BarberShop.Application.UseCases.Appointment.Create
                 appointment.Id,
                 appointment.StartTime,
                 appointment.EndTime,
-                Status = appointment.Status.ToString()
+                Status = (int)appointment.Status
             });
         }
     }

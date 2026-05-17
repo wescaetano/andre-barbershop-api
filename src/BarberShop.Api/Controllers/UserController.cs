@@ -38,8 +38,8 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Cria um novo usuário</summary>
-        // [APIAuthorization("Users-C")]
         [HttpPost]
+        // [APIAuthorization("Users-C")]
         public async Task<IActionResult> Create([FromBody] CreateUserModel model)
         {
             var result = await _createUserUseCase.ExecuteAsync(model);
@@ -47,8 +47,8 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Atualiza dados de um usuário existente</summary>
-        // [APIAuthorization("Users-E")]
         [HttpPut]
+        // [APIAuthorization("Users-E")]
         public async Task<IActionResult> Update([FromBody] UpdateUserModel model)
         {
             var result = await _updateUserUseCase.ExecuteAsync(model);
@@ -56,8 +56,8 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Altera o status (ativo/inativo) de um usuário</summary>
-        [APIAuthorization("Users-V")]
         [HttpPatch("status")]
+        //[APIAuthorization("Users-E")]
         public async Task<IActionResult> ChangeStatus([FromBody] ChangeUserStatusModel model)
         {
             var result = await _changeUserStatusUseCase.ExecuteAsync(model);
@@ -65,8 +65,8 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Busca um usuário pelo ID, incluindo seus perfis de acesso</summary>
-        [APIAuthorization("Users-I")]
         [HttpGet("{id:long}")]
+        //[APIAuthorization("Users-V")]
         public async Task<IActionResult> GetById([FromRoute] long id)
         {
             var result = await _getUserByIdUseCase.ExecuteAsync(id);
@@ -74,8 +74,8 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Lista usuários com paginação e filtros. Filtros: name, email, status. Ordenação: Id | Name | Email | CreationDate (asc/desc)</summary>
-        [APIAuthorization("Users-I")]
         [HttpGet]
+        //[APIAuthorization("Users-V")]
         public async Task<IActionResult> GetPaginated([FromQuery] GetUsersPaginatedModel model)
         {
             var result = await _getUsersPaginatedUseCase.ExecuteAsync(model);
@@ -83,8 +83,8 @@ namespace BarberShop.Api.Controllers
         }
 
         /// <summary>Remove um usuário via soft delete (preenche ExclusionDate, não apaga do banco)</summary>
-        [APIAuthorization("Users-D")]
         [HttpDelete("{id:long}")]
+        //[APIAuthorization("Users-EX")]
         public async Task<IActionResult> Delete([FromRoute] long id)
         {
             var result = await _deleteUserUseCase.ExecuteAsync(id);

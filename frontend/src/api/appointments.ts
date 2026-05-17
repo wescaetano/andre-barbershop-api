@@ -11,7 +11,9 @@ export const appointmentsApi = {
   },
 
   create: async (body: CreateAppointmentRequest): Promise<Appointment> => {
-    const { data } = await apiClient.post<ApiResponse<Appointment>>('/appointment', body)
+    const toTimeString = (t: string) => (t.length === 5 ? `${t}:00` : t)
+    const payload = { ...body, startTime: toTimeString(body.startTime) }
+    const { data } = await apiClient.post<ApiResponse<Appointment>>('/appointment', payload)
     if (!data.success || !data.data) throw new Error(data.responseLabel)
     return data.data
   },

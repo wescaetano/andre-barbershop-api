@@ -46,6 +46,11 @@ export default function BarberBlocks() {
 
   const barberId = allBarbers.find((b) => b.userId === userId)?.id ?? null
 
+  function toLocalIso(d: Date) {
+    const pad = (n: number) => String(n).padStart(2, '0')
+    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
+  }
+
   const now = new Date()
   const threeMonthsLater = new Date(now)
   threeMonthsLater.setMonth(threeMonthsLater.getMonth() + 3)
@@ -57,8 +62,8 @@ export default function BarberBlocks() {
         `/scheduleblock/${barberId}`,
         {
           params: {
-            from: now.toISOString(),
-            to: threeMonthsLater.toISOString(),
+            from: toLocalIso(now),
+            to: toLocalIso(threeMonthsLater),
           },
         },
       )
@@ -69,8 +74,8 @@ export default function BarberBlocks() {
 
   const { mutate: createBlock, isPending: creating } = useMutation({
     mutationFn: async () => {
-      const startTime = new Date(`${form.date}T${form.startTime}`).toISOString()
-      const endTime = new Date(`${form.date}T${form.endTime}`).toISOString()
+      const startTime = `${form.date}T${form.startTime}:00`
+      const endTime = `${form.date}T${form.endTime}:00`
       await apiClient.post<ApiResponse>('/scheduleblock', {
         barberId,
         startTime,

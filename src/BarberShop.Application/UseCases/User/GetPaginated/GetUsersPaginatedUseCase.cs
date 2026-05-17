@@ -69,7 +69,7 @@ namespace BarberShop.Application.UseCases.User.GetPaginated
                         u.Name,
                         u.Email,
                         u.ImageUrl,
-                        Status = u.Status.ToString(),
+                        Status = (int)u.Status,
                         u.CreationDate,
                         Profiles = u.ProfilesUsers.Select(pu => new
                         {

@@ -12,10 +12,11 @@ import type { Barber } from '../../types/barber'
 interface BarberForm {
   name: string
   email: string
+  password: string
   displayName: string
 }
 
-const emptyForm: BarberForm = { name: '', email: '', displayName: '' }
+const emptyForm: BarberForm = { name: '', email: '', password: '', displayName: '' }
 
 export default function Barbers() {
   const toast = useToast()
@@ -39,6 +40,7 @@ export default function Barbers() {
         : barbersApi.create({
             name: form.name,
             email: form.email,
+            password: form.password,
             displayName: form.displayName,
           }),
     onSuccess: () => {
@@ -156,6 +158,13 @@ export default function Barbers() {
                 value={form.email}
                 onChange={(e) => setForm((f) => ({ ...f, email: e.target.value }))}
                 placeholder="Ex: joao@barbearia.com"
+              />
+              <Input
+                label="Senha"
+                type="password"
+                value={form.password}
+                onChange={(e) => setForm((f) => ({ ...f, password: e.target.value }))}
+                placeholder="Mínimo 6 caracteres"
               />
             </>
           )}

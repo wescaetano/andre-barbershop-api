@@ -1,4 +1,5 @@
 import axios, { AxiosError } from 'axios'
+import { useAuthStore } from '../store/authStore'
 
 const BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000'
 
@@ -10,20 +11,23 @@ export const apiClient = axios.create({
 // Dedicated client for refresh calls (avoids circular interceptor triggering)
 const refreshClient = axios.create({ baseURL: BASE_URL })
 
-// Attach token to every request
-apiClient.interceptors.request.use((config) => {
-  const raw = localStorage.getItem('auth-storage')
-  if (raw) {
-    try {
-      const parsed = JSON.parse(raw)
-      const token = parsed?.state?.accessToken
-      if (token) config.headers.Authorization = `Bearer ${token}`
-    } catch (e) {
-      console.warn('auth-storage parse error:', e)
-    }
+// Keep the Authorization default in sync with Zustand store changes.
+// This fires synchronously on: login (setAuth), logout, token refresh, AND
+// persist hydration (when Zustand reads from localStorage and calls set()).
+useAuthStore.subscribe((state) => {
+  if (state.accessToken) {
+    apiClient.defaults.headers.common['Authorization'] = `Bearer ${state.accessToken}`
+  } else {
+    delete apiClient.defaults.headers.common['Authorization']
   }
-  return config
 })
+
+// Also initialize from current state (covers synchronous-storage case where
+// persist hydrates the store before any subscriber is registered)
+const { accessToken: _initial } = useAuthStore.getState()
+if (_initial) {
+  apiClient.defaults.headers.common['Authorization'] = `Bearer ${_initial}`
+}
 
 // Silent refresh on 401
 let isRefreshing = false
@@ -52,43 +56,30 @@ apiClient.interceptors.response.use(
       return new Promise<string>((resolve, reject) => {
         refreshQueue.push({ resolve, reject })
       }).then((token) => {
-        original!.headers!.Authorization = `Bearer ${token}`
+        original!.headers!['Authorization'] = `Bearer ${token}`
         return apiClient(original!)
       })
     }
 
     isRefreshing = true
     try {
-      const raw = localStorage.getItem('auth-storage')
-      const parsed = raw ? JSON.parse(raw) : null
-      const refreshToken = parsed?.state?.refreshToken
+      const { refreshToken, setAuth } = useAuthStore.getState()
       if (!refreshToken) throw new Error('no refresh token')
 
       const { data } = await refreshClient.post('/auth/refresh-token', null, {
         params: { token: refreshToken },
       })
-      const newAccessToken: string = data.data.accessToken
-      const newRefreshToken: string = data.data.refreshToken
-
-      // Update persisted store (reuse already-parsed object)
-      if (parsed) {
-        parsed.state.accessToken = newAccessToken
-        parsed.state.refreshToken = newRefreshToken
-        try {
-          localStorage.setItem('auth-storage', JSON.stringify(parsed))
-        } catch (e) {
-          console.warn('Failed to persist refreshed tokens:', e)
-        }
-      }
+      const newData = data.data
+      setAuth(newData) // triggers subscriber → updates defaults.headers.common
 
       isRefreshing = false
-      drainQueue(newAccessToken)
-      original!.headers!.Authorization = `Bearer ${newAccessToken}`
+      drainQueue(newData.accessToken)
+      original!.headers!['Authorization'] = `Bearer ${newData.accessToken}`
       return apiClient(original!)
     } catch (err) {
       isRefreshing = false
       rejectQueue(err)
-      localStorage.removeItem('auth-storage')
+      useAuthStore.getState().logout()
       window.location.href = '/login'
       return Promise.reject(error)
     }

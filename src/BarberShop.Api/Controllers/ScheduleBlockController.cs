@@ -8,7 +8,6 @@ using Microsoft.AspNetCore.Mvc;
 namespace BarberShop.Api.Controllers
 {
     /// <summary>Bloqueios de agenda por barbeiro</summary>
-    [APIAuthorization("Barber-V", "Barber-E", "Barber-C", "Users-V", "Users-E")]
     public class ScheduleBlockController : BaseController
     {
         private readonly IGetScheduleBlocksByBarberUseCase _get;
@@ -28,6 +27,7 @@ namespace BarberShop.Api.Controllers
 
         /// <summary>Lista bloqueios de um barbeiro em um intervalo</summary>
         [HttpGet("{barberId:long}")]
+        //[APIAuthorization("Barber-V")]
         public async Task<IActionResult> GetByBarber(
             [FromRoute] long barberId,
             [FromQuery] DateTime from,
@@ -36,11 +36,13 @@ namespace BarberShop.Api.Controllers
 
         /// <summary>Cria um bloqueio de horário</summary>
         [HttpPost]
+        //[APIAuthorization("Barber-C")]
         public async Task<IActionResult> Create([FromBody] CreateScheduleBlockModel model)
             => Result(await _create.ExecuteAsync(model));
 
         /// <summary>Remove um bloqueio</summary>
         [HttpDelete("{id:long}")]
+        //[APIAuthorization("Barber-EX")]
         public async Task<IActionResult> Delete([FromRoute] long id)
             => Result(await _delete.ExecuteAsync(id));
     }

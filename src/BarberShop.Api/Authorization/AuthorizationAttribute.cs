@@ -1,87 +1,104 @@
 ﻿using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Filters;
+using Microsoft.IdentityModel.Tokens;
+using System.IdentityModel.Tokens.Jwt;
+using System.Text;
 using BarberShop.Api.Controllers;
 using BarberShop.Communication.Models;
 
 namespace BarberShop.Api.Authorization
 {
-    /// <summary>
-    ///
-    /// </summary>
     public class APIAuthorizationAttribute : TypeFilterAttribute
     {
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="policies"></param>
         public APIAuthorizationAttribute(params string[] policies) : base(typeof(APIAuthorizationFilter))
         {
             Arguments = new object[] { policies };
         }
     }
 
-    /// <summary>
-    ///
-    /// </summary>
-    public class APIAuthorizationFilter : IActionFilter
+    public class APIAuthorizationFilter : IAsyncActionFilter
     {
-        private readonly IAuthorizationService _authService;
+        private readonly IConfiguration _config;
 
-        /// <summary>
-        ///
-        /// </summary>
         public string[] Policies { get; set; }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="authService"></param>
-        /// <param name="policies"></param>
-        public APIAuthorizationFilter(IAuthorizationService authService, params string[] policies)
+        public APIAuthorizationFilter(IConfiguration config, params string[] policies)
         {
+            _config = config;
             Policies = policies;
-            _authService = authService;
         }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="filterContext"></param>
-        public async void OnActionExecuting(ActionExecutingContext filterContext)
+        public async Task OnActionExecutionAsync(ActionExecutingContext context, ActionExecutionDelegate next)
         {
-            // Skip custom policy check for actions that explicitly opt out via [AllowAnonymous].
-            var endpoint = filterContext.HttpContext.GetEndpoint();
+            var endpoint = context.HttpContext.GetEndpoint();
             if (endpoint?.Metadata.GetMetadata<IAllowAnonymous>() != null)
-                return;
-
-            var usuarioId = (string?)filterContext.HttpContext.Items["id"];
-
-            var controller = filterContext.Controller as BaseController;
-
-            controller?.SetUsuarioId((long)Convert.ToDouble(usuarioId));
-
-            foreach (var p in Policies)
             {
-                try
+                await next();
+                return;
+            }
+
+            var token = context.HttpContext.Request.Headers["Authorization"]
+                .FirstOrDefault()?.Split(" ").Last();
+
+            if (string.IsNullOrWhiteSpace(token))
+            {
+                context.Result = new JsonResult(FactoryResponse<dynamic>.Unauthorized("Token não informado."))
                 {
-                    if ((await _authService.AuthorizeAsync(filterContext.HttpContext.User, p)).Succeeded)
-                        return;
-                }
-                catch
+                    StatusCode = StatusCodes.Status401Unauthorized
+                };
+                return;
+            }
+
+            List<System.Security.Claims.Claim> claims;
+            try
+            {
+                var key = Encoding.ASCII.GetBytes(_config["TokenConfigurations:Key"]!);
+                var issuer = _config["TokenConfigurations:Issuer"];
+                var audience = _config["TokenConfigurations:Audience"];
+                var handler = new JwtSecurityTokenHandler();
+                handler.ValidateToken(token, new TokenValidationParameters
                 {
-                    break;
+                    ValidateIssuerSigningKey = true,
+                    IssuerSigningKey = new SymmetricSecurityKey(key),
+                    ValidateIssuer = !string.IsNullOrWhiteSpace(issuer),
+                    ValidIssuer = issuer,
+                    ValidateAudience = !string.IsNullOrWhiteSpace(audience),
+                    ValidAudience = audience,
+                    ValidateLifetime = true,
+                    ClockSkew = TimeSpan.Zero
+                }, out SecurityToken validated);
+
+                var jwt = (JwtSecurityToken)validated;
+                claims = jwt.Claims.ToList();
+
+                var userId = claims.FirstOrDefault(c => c.Type == "id")?.Value;
+                var controller = context.Controller as BaseController;
+                controller?.SetUsuarioId((long)Convert.ToDouble(userId));
+            }
+            catch
+            {
+                context.Result = new JsonResult(FactoryResponse<dynamic>.Unauthorized("Token inválido ou expirado."))
+                {
+                    StatusCode = StatusCodes.Status401Unauthorized
+                };
+                return;
+            }
+
+            // Check if any required policy value is present in the token claims
+            foreach (var policy in Policies)
+            {
+                if (claims.Any(c => c.Value == policy))
+                {
+                    await next();
+                    return;
                 }
             }
-            filterContext.Result = new JsonResult(FactoryResponse<dynamic>.Forbiden("Usuário sem autorização de acesso!")) { StatusCode = StatusCodes.Status403Forbidden };
-            return;
-        }
 
-        /// <summary>
-        ///
-        /// </summary>
-        /// <param name="context"></param>
-        public void OnActionExecuted(ActionExecutedContext context)
-        { }
+            context.Result = new JsonResult(FactoryResponse<dynamic>.Forbiden("Usuário sem autorização de acesso."))
+            {
+                StatusCode = StatusCodes.Status403Forbidden
+            };
+        }
     }
 }

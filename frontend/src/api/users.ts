@@ -8,10 +8,26 @@ import type {
   PaginatedResponse,
 } from '../types/user'
 
+interface RawPaginatedResponse<T> {
+  data: T[]
+  total: number
+  page: number
+  limit: number
+  pages: number
+}
+
 export const usersApi = {
   list: async (params: GetUsersPaginatedRequest = {}): Promise<PaginatedResponse<User>> => {
-    const { data } = await apiClient.get<ApiResponse<PaginatedResponse<User>>>('/user', { params })
-    return data.data ?? { items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 }
+    const { data } = await apiClient.get<ApiResponse<RawPaginatedResponse<User>>>('/user', { params })
+    const raw = data.data
+    if (!raw) return { items: [], totalCount: 0, pageNumber: 1, pageSize: 20, totalPages: 0 }
+    return {
+      items: raw.data,
+      totalCount: Number(raw.total),
+      pageNumber: Number(raw.page),
+      pageSize: Number(raw.limit),
+      totalPages: Number(raw.pages),
+    }
   },
 
   getById: async (id: number): Promise<User> => {

@@ -98,12 +98,12 @@ app.UseHangfireDashboard("/hangfire", new DashboardOptions
 
 app.UseRouting();
 app.UseCors();
+app.UseMiddleware<JwtMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
 app.UseHttpsRedirection();
 
 #region Middlewares
-app.UseMiddleware<JwtMiddleware>();
 app.UseMiddleware(typeof(HandlingMiddleware));
 #endregion Middlewares
 
