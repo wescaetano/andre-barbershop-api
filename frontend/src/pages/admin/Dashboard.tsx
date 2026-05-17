@@ -73,11 +73,11 @@ export default function AdminDashboard() {
     <div className="flex flex-col gap-6">
       <div className="flex items-start justify-between gap-4">
         <div>
-          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">BarberAgenda</p>
+          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">André BarberShop</p>
           <h1 className="font-display font-extrabold text-4xl uppercase leading-none">
             Olá, {userName?.split(' ')[0] ?? 'Barbeiro'}
           </h1>
-          <p className="text-text-secondary text-sm font-body mt-2">Seja bem-vindo ao BarberAgenda!</p>
+          <p className="text-text-secondary text-sm font-body mt-2">Seja bem-vindo ao André BarberShop!</p>
         </div>
         <Badge
           className={

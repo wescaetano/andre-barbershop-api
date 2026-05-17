@@ -82,7 +82,7 @@ export default function BarberSchedule() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">BarberAgenda</p>
+          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">André BarberShop</p>
           <h1 className="font-display font-extrabold text-4xl uppercase leading-none">Minha Agenda</h1>
         </div>
         <div className="flex items-center gap-2">

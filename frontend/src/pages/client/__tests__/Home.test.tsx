@@ -42,7 +42,7 @@ describe('ClientHome — welcome banner', () => {
 
   it('renders welcome message', () => {
     renderHome()
-    expect(screen.getByText('Seja bem-vindo ao BarberAgenda!')).toBeInTheDocument()
+    expect(screen.getByText('Seja bem-vindo ao André BarberShop!')).toBeInTheDocument()
   })
 
   it('shows "Cliente" badge when role is client', () => {

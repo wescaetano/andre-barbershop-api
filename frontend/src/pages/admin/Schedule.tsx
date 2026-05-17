@@ -116,7 +116,7 @@ export default function AdminSchedule() {
     <div className="flex flex-col gap-4">
       <div className="flex items-center justify-between flex-wrap gap-2">
         <div>
-          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">BarberAgenda</p>
+          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">André BarberShop</p>
           <h1 className="font-display font-extrabold text-4xl uppercase leading-none">Agenda</h1>
         </div>
         <div className="flex items-center gap-2 flex-wrap">

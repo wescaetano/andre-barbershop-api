@@ -81,7 +81,7 @@ export default function Services() {
     <div className="flex flex-col gap-6">
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">BarberAgenda</p>
+          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">André BarberShop</p>
           <h1 className="font-display font-extrabold text-4xl uppercase leading-none">Serviços</h1>
         </div>
         <Button onClick={openCreate}>

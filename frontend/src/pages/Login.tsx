@@ -102,7 +102,7 @@ export default function Login() {
           <Scissors size={28} className="text-white" />
         </div>
         <h1 className="font-display font-extrabold text-3xl tracking-widest uppercase text-text-primary">
-          Barber<span className="text-accent">Agenda</span>
+          André <span className="text-accent">BarberShop</span>
         </h1>
         <p className="text-text-secondary text-sm font-body">Barbearia que respeita o seu tempo.</p>
       </div>

@@ -135,7 +135,7 @@ export default function BarberBlocks() {
     return (
       <div className="flex flex-col gap-6">
         <div>
-          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">BarberAgenda</p>
+          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">André BarberShop</p>
           <h1 className="font-display font-extrabold text-4xl uppercase leading-none">Bloqueios</h1>
         </div>
         <p className="text-text-secondary font-body">Perfil de barbeiro não encontrado.</p>
@@ -148,7 +148,7 @@ export default function BarberBlocks() {
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">BarberAgenda</p>
+          <p className="text-xs font-display uppercase tracking-[0.2em] text-accent mb-1">André BarberShop</p>
           <h1 className="font-display font-extrabold text-4xl uppercase leading-none">Bloqueios</h1>
         </div>
         <Button onClick={() => setModalOpen(true)} disabled={barberId === null}>

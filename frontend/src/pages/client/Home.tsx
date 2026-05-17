@@ -69,7 +69,7 @@ export default function ClientHome() {
       {/* Role banner */}
       <div className="px-5 py-3 bg-bg-surface border-b border-border flex items-center justify-between">
         <span className="text-sm font-body text-text-secondary">
-          Seja bem-vindo ao BarberAgenda!
+          Seja bem-vindo ao André BarberShop!
         </span>
         <Badge
           className={

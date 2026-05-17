@@ -25,7 +25,7 @@ export function BarberSidebar() {
           <Scissors size={18} className="text-accent flex-shrink-0" />
           {!collapsed && (
             <span className="font-display font-bold text-base tracking-widest uppercase truncate">
-              Barber<span className="text-accent">Agenda</span>
+              André <span className="text-accent">BarberShop</span>
             </span>
           )}
         </button>
