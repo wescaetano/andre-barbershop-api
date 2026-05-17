@@ -112,6 +112,16 @@ namespace BarberShop.Infra.Migrations
                             Name = "Payments",
                             Register = true,
                             Visualize = true
+                        },
+                        new
+                        {
+                            Id = 6L,
+                            Edit = true,
+                            Exclude = true,
+                            Inactivate = true,
+                            Name = "Barber",
+                            Register = true,
+                            Visualize = true
                         });
                 });
 
@@ -154,6 +164,12 @@ namespace BarberShop.Infra.Migrations
                         {
                             Id = 2L,
                             Name = "Cliente",
+                            Status = 1
+                        },
+                        new
+                        {
+                            Id = 3L,
+                            Name = "Barbeiro",
                             Status = 1
                         });
                 });
@@ -267,6 +283,26 @@ namespace BarberShop.Infra.Migrations
                             Inactivate = false,
                             Register = true,
                             Visualize = true
+                        },
+                        new
+                        {
+                            ModuleId = 6L,
+                            ProfileId = 3L,
+                            Edit = true,
+                            Exclude = true,
+                            Inactivate = true,
+                            Register = true,
+                            Visualize = true
+                        },
+                        new
+                        {
+                            ModuleId = 4L,
+                            ProfileId = 3L,
+                            Edit = false,
+                            Exclude = false,
+                            Inactivate = true,
+                            Register = true,
+                            Visualize = true
                         });
                 });
 
@@ -300,6 +336,9 @@ namespace BarberShop.Infra.Migrations
 
                     MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
 
+                    b.Property<long?>("BarberId")
+                        .HasColumnType("bigint");
+
                     b.Property<DateTime?>("CreationDate")
                         .HasColumnType("datetime(6)");
 
@@ -308,6 +347,9 @@ namespace BarberShop.Infra.Migrations
 
                     b.Property<DateTime?>("ExclusionDate")
                         .HasColumnType("datetime(6)");
+
+                    b.Property<long?>("ServiceId")
+                        .HasColumnType("bigint");
 
                     b.Property<DateTime>("StartTime")
                         .HasColumnType("datetime(6)");
@@ -323,9 +365,49 @@ namespace BarberShop.Infra.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("BarberId");
+
+                    b.HasIndex("ServiceId");
+
                     b.HasIndex("UserId");
 
                     b.ToTable("Appointments", (string)null);
+                });
+
+            modelBuilder.Entity("BarberShop.Domain.Barber", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("DisplayName")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<DateTime?>("ExclusionDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<long>("UserId")
+                        .HasColumnType("bigint");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("UserId")
+                        .IsUnique();
+
+                    b.ToTable("Barbers", (string)null);
                 });
 
             modelBuilder.Entity("BarberShop.Domain.Payment", b =>
@@ -401,6 +483,79 @@ namespace BarberShop.Infra.Migrations
                     b.ToTable("RefreshTokens");
                 });
 
+            modelBuilder.Entity("BarberShop.Domain.ScheduleBlock", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BarberId")
+                        .HasColumnType("bigint");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime>("EndTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("ExclusionDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<string>("Reason")
+                        .HasMaxLength(255)
+                        .HasColumnType("varchar(255)");
+
+                    b.Property<DateTime>("StartTime")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BarberId");
+
+                    b.ToTable("ScheduleBlocks", (string)null);
+                });
+
+            modelBuilder.Entity("BarberShop.Domain.Service", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("DurationMinutes")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExclusionDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(100)
+                        .HasColumnType("varchar(100)");
+
+                    b.Property<decimal>("Price")
+                        .HasColumnType("decimal(10,2)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Services", (string)null);
+                });
+
             modelBuilder.Entity("BarberShop.Domain.User", b =>
                 {
                     b.Property<long>("Id")
@@ -449,9 +604,49 @@ namespace BarberShop.Infra.Migrations
                             CreationDate = new DateTime(2024, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc),
                             Email = "admin@barbershop.com",
                             Name = "Admin",
-                            Password = "$2a$12$4sHQj3OUBgi.syi7oQwAf.TCbjhMzvqedwYnoVKPx5PVHR19siKKK",
+                            Password = "$2a$15$2M1byKnSOu52VViSeYWEHeK1q3uXWKq8l.OY6Pa8KI08dz2P9feUK",
                             Status = 1
                         });
+                });
+
+            modelBuilder.Entity("BarberShop.Domain.WorkingHours", b =>
+                {
+                    b.Property<long>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("bigint");
+
+                    MySqlPropertyBuilderExtensions.UseMySqlIdentityColumn(b.Property<long>("Id"));
+
+                    b.Property<long>("BarberId")
+                        .HasColumnType("bigint");
+
+                    b.Property<TimeOnly>("CloseTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<DateTime?>("CreationDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<int>("DayOfWeek")
+                        .HasColumnType("int");
+
+                    b.Property<DateTime?>("ExclusionDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.Property<bool>("IsOpen")
+                        .HasColumnType("tinyint(1)");
+
+                    b.Property<TimeOnly>("OpenTime")
+                        .HasColumnType("time(6)");
+
+                    b.Property<DateTime?>("UpdateDate")
+                        .HasColumnType("datetime(6)");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("BarberId", "DayOfWeek")
+                        .IsUnique();
+
+                    b.ToTable("WorkingHours", (string)null);
                 });
 
             modelBuilder.Entity("BarberShop.Domain.AccessControl.ProfileModule", b =>
@@ -494,8 +689,33 @@ namespace BarberShop.Infra.Migrations
 
             modelBuilder.Entity("BarberShop.Domain.Appointment", b =>
                 {
+                    b.HasOne("BarberShop.Domain.Barber", "Barber")
+                        .WithMany()
+                        .HasForeignKey("BarberId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
+                    b.HasOne("BarberShop.Domain.Service", "Service")
+                        .WithMany()
+                        .HasForeignKey("ServiceId")
+                        .OnDelete(DeleteBehavior.Restrict);
+
                     b.HasOne("BarberShop.Domain.User", "User")
                         .WithMany("Appointments")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.Navigation("Barber");
+
+                    b.Navigation("Service");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BarberShop.Domain.Barber", b =>
+                {
+                    b.HasOne("BarberShop.Domain.User", "User")
+                        .WithMany()
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
@@ -523,6 +743,28 @@ namespace BarberShop.Infra.Migrations
                         .IsRequired();
 
                     b.Navigation("User");
+                });
+
+            modelBuilder.Entity("BarberShop.Domain.ScheduleBlock", b =>
+                {
+                    b.HasOne("BarberShop.Domain.Barber", "Barber")
+                        .WithMany()
+                        .HasForeignKey("BarberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Barber");
+                });
+
+            modelBuilder.Entity("BarberShop.Domain.WorkingHours", b =>
+                {
+                    b.HasOne("BarberShop.Domain.Barber", "Barber")
+                        .WithMany()
+                        .HasForeignKey("BarberId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Barber");
                 });
 
             modelBuilder.Entity("BarberShop.Domain.AccessControl.Module", b =>

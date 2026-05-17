@@ -36,4 +36,4 @@ export interface ApiResponse<T = unknown> {
   data?: T
 }
 
-export type UserRole = 'admin' | 'client'
+export type UserRole = 'admin' | 'barber' | 'client'

@@ -18,6 +18,7 @@ import type { User } from '../../types/user'
 const createSchema = z.object({
   name: z.string().min(1, 'Nome obrigatório'),
   email: z.string().email('E-mail inválido'),
+  password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
   accessProfile: z.coerce.number().min(1, 'Perfil obrigatório'),
 })
 type CreateForm = z.infer<typeof createSchema>
@@ -44,7 +45,7 @@ export default function AdminUsers() {
   })
 
   const { mutate: createUser, isPending: creating } = useMutation({
-    mutationFn: (d: CreateForm) => usersApi.create({ name: d.name, email: d.email, accessProfile: d.accessProfile }),
+    mutationFn: (d: CreateForm) => usersApi.create({ name: d.name, email: d.email, password: d.password, accessProfile: d.accessProfile }),
     onSuccess: () => {
       toast('Usuário criado com sucesso!', 'success')
       setCreateOpen(false)
@@ -142,6 +143,7 @@ export default function AdminUsers() {
         <form onSubmit={handleSubmit((d) => createUser(d as CreateForm))} className="flex flex-col gap-4">
           <Input id="name" label="Nome" placeholder="Nome completo" error={errors.name?.message} {...register('name')} />
           <Input id="email" label="E-mail" type="email" placeholder="email@exemplo.com" error={errors.email?.message} {...register('email')} />
+          <Input id="password" label="Senha" type="password" placeholder="Mínimo 6 caracteres" error={errors.password?.message} {...register('password')} />
           <Input id="profile" label="ID do perfil de acesso" type="number" placeholder="Ex: 2" error={errors.accessProfile?.message} {...register('accessProfile')} />
           <Button type="submit" fullWidth loading={creating}>Criar usuário</Button>
         </form>

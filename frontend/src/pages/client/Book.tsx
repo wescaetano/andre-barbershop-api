@@ -1,14 +1,18 @@
 import { useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { Navigate, useNavigate } from 'react-router-dom'
 import { useQuery, useMutation } from '@tanstack/react-query'
-import { ChevronLeft, Calendar, Clock, Check } from 'lucide-react'
+import { ChevronLeft, Calendar, Clock, Check, Scissors, User } from 'lucide-react'
 import { useAuthStore } from '../../store/authStore'
 import { appointmentsApi } from '../../api/appointments'
+import { servicesApi } from '../../api/services'
+import { barbersApi } from '../../api/barbers'
 import { Button } from '../../components/ui/Button'
 import { Modal } from '../../components/ui/Modal'
 import { Spinner } from '../../components/ui/Spinner'
 import { useToast } from '../../components/ui/Toast'
 import { useApiError } from '../../hooks/useApiError'
+import type { Service } from '../../types/service'
+import type { Barber } from '../../types/barber'
 
 function toISODate(d: Date) {
   return d.toISOString().split('T')[0]
@@ -91,7 +95,7 @@ function SlotGrid({ slots, selected, onSelect }: { slots: string[]; selected: st
   )
 }
 
-const STEPS = ['Data', 'Horário', 'Confirmar']
+const STEPS = ['Serviço', 'Barbeiro', 'Data', 'Horário', 'Confirmar']
 
 export default function Book() {
   const navigate = useNavigate()
@@ -99,21 +103,48 @@ export default function Book() {
   const { getMessage } = useApiError()
   const userId = useAuthStore((s) => s.userId)
   const isAuthenticated = useAuthStore((s) => s.isAuthenticated)
+  const role = useAuthStore((s) => s.role)
+
+  if (isAuthenticated && role === 'admin') return <Navigate to="/admin" replace />
+  if (isAuthenticated && role === 'barber') return <Navigate to="/barber" replace />
+
   const [step, setStep] = useState(0)
+  const [selectedService, setSelectedService] = useState<Service | null>(null)
+  const [selectedBarber, setSelectedBarber] = useState<Barber | null>(null)
   const [selectedDate, setSelectedDate] = useState<Date | null>(null)
   const [selectedSlot, setSelectedSlot] = useState<string | null>(null)
 
   const dateString = selectedDate ? toISODate(selectedDate) : ''
 
+  const { data: services = [], isLoading: loadingServices } = useQuery({
+    queryKey: ['services'],
+    queryFn: servicesApi.getActive,
+  })
+
+  const { data: barbers = [], isLoading: loadingBarbers } = useQuery({
+    queryKey: ['barbers', 'active'],
+    queryFn: barbersApi.getActive,
+    enabled: step >= 1,
+  })
+
   const { data: slots = [], isFetching: loadingSlots, isError: slotsError } = useQuery({
-    queryKey: ['slots', dateString],
-    queryFn: () => appointmentsApi.getAvailableSlots(dateString),
-    enabled: !!dateString && step >= 1,
+    queryKey: ['slots', dateString, selectedService?.id, selectedBarber?.id],
+    queryFn: () => appointmentsApi.getAvailableSlots(dateString, selectedService!.id, selectedBarber!.id),
+    enabled: !!dateString && !!selectedService && !!selectedBarber && step === 3,
   })
 
   const { mutate: createAppointment, isPending } = useMutation({
-    mutationFn: () =>
-      appointmentsApi.create({ userId: userId!, date: dateString, startTime: selectedSlot! }),
+    mutationFn: () => {
+      if (!userId || !selectedService || !selectedBarber || !selectedSlot)
+        return Promise.reject(new Error('Dados incompletos.'))
+      return appointmentsApi.create({
+        userId,
+        date: dateString,
+        startTime: selectedSlot,
+        serviceId: selectedService.id,
+        barberId: selectedBarber.id,
+      })
+    },
     onSuccess: () => {
       toast('Agendamento criado com sucesso!', 'success')
       navigate('/app/appointments')
@@ -130,7 +161,16 @@ export default function Book() {
   return (
     <div className="min-h-screen bg-bg-base flex flex-col">
       <div className="bg-bg-surface border-b border-border px-5 pt-10 pb-4 flex items-center gap-3">
-        <button onClick={() => step === 0 ? navigate(-1) : setStep(s => s - 1)} className="text-text-secondary hover:text-text-primary">
+        <button
+          onClick={() => {
+            if (step === 0) { navigate(-1); return }
+            if (step <= 1) setSelectedBarber(null)
+            if (step <= 2) setSelectedDate(null)
+            if (step <= 3) setSelectedSlot(null)
+            setStep(s => s - 1)
+          }}
+          className="text-text-secondary hover:text-text-primary"
+        >
           <ChevronLeft size={22} />
         </button>
         <h1 className="font-display font-bold text-2xl uppercase flex-1">Agendar</h1>
@@ -161,11 +201,7 @@ export default function Book() {
         ))}
       </div>
 
-      <Modal
-        open={step === 2 && !isAuthenticated}
-        onClose={() => setStep(1)}
-        title="Conta necessária"
-      >
+      <Modal open={step === 4 && !isAuthenticated} onClose={() => setStep(s => s - 1)} title="Conta necessária">
         <div className="flex flex-col gap-4">
           <p className="text-sm font-body text-text-secondary">
             Para finalizar o agendamento, crie uma conta ou entre na sua.
@@ -180,20 +216,89 @@ export default function Book() {
       </Modal>
 
       <div className="flex-1 px-5 pt-6 pb-24">
+        {/* Step 0 — Service */}
         {step === 0 && (
           <div className="flex flex-col gap-5">
             <div className="flex items-center gap-2 mb-1">
-              <Calendar size={16} className="text-accent" />
-              <h2 className="font-display font-bold text-sm uppercase tracking-widest text-text-secondary">Escolha a data</h2>
+              <Scissors size={16} className="text-accent" />
+              <h2 className="font-display font-bold text-sm uppercase tracking-widest text-text-secondary">Escolha o serviço</h2>
             </div>
-            <DatePicker value={selectedDate} onChange={setSelectedDate} />
-            <Button fullWidth size="lg" disabled={!selectedDate} onClick={() => setStep(1)}>
+            {loadingServices ? (
+              <div className="flex justify-center py-10"><Spinner /></div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {services.map(s => (
+                  <button
+                    key={s.id}
+                    onClick={() => { setSelectedService(s); setSelectedBarber(null); setSelectedDate(null); setSelectedSlot(null) }}
+                    className={`w-full text-left p-4 rounded-sm border transition-colors
+                      ${selectedService?.id === s.id
+                        ? 'border-accent bg-accent/5'
+                        : 'border-border hover:border-accent/50'
+                      }`}
+                  >
+                    <p className="font-body font-medium text-text-primary">{s.name}</p>
+                    <p className="text-xs text-text-secondary font-body mt-1">
+                      {s.durationMinutes} min · R$ {Number(s.price).toFixed(2)}
+                    </p>
+                  </button>
+                ))}
+              </div>
+            )}
+            <Button fullWidth size="lg" disabled={!selectedService} onClick={() => setStep(1)}>
               Próximo
             </Button>
           </div>
         )}
 
+        {/* Step 1 — Barber */}
         {step === 1 && (
+          <div className="flex flex-col gap-5">
+            <div className="flex items-center gap-2 mb-1">
+              <User size={16} className="text-accent" />
+              <h2 className="font-display font-bold text-sm uppercase tracking-widest text-text-secondary">Escolha o barbeiro</h2>
+            </div>
+            {loadingBarbers ? (
+              <div className="flex justify-center py-10"><Spinner /></div>
+            ) : (
+              <div className="flex flex-col gap-3">
+                {barbers.map(b => (
+                  <button
+                    key={b.id}
+                    onClick={() => setSelectedBarber(b)}
+                    className={`w-full text-left p-4 rounded-sm border transition-colors
+                      ${selectedBarber?.id === b.id
+                        ? 'border-accent bg-accent/5'
+                        : 'border-border hover:border-accent/50'
+                      }`}
+                  >
+                    <p className="font-body font-medium text-text-primary">{b.displayName}</p>
+                  </button>
+                ))}
+              </div>
+            )}
+            <Button fullWidth size="lg" disabled={!selectedBarber} onClick={() => setStep(2)}>
+              Próximo
+            </Button>
+          </div>
+        )}
+
+        {/* Step 2 — Date */}
+        {step === 2 && (
+          <div className="flex flex-col gap-5">
+            <div className="flex items-center gap-2 mb-1">
+              <Calendar size={16} className="text-accent" />
+              <h2 className="font-display font-bold text-sm uppercase tracking-widest text-text-secondary">Escolha a data</h2>
+            </div>
+            <DatePicker value={selectedDate} onChange={(d) => { setSelectedDate(d); setSelectedSlot(null) }} />
+            <Button fullWidth size="lg" disabled={!selectedDate} onClick={() => setStep(3)}>
+              Próximo
+            </Button>
+          </div>
+        )}
+
+        {/* Step 3 — Time */}
+        {step === 3 && (
           <div className="flex flex-col gap-5">
             <div>
               <div className="flex items-center gap-2 mb-1">
@@ -207,7 +312,6 @@ export default function Book() {
             ) : slotsError ? (
               <div className="py-8 flex flex-col items-center gap-2 text-center">
                 <p className="text-sm font-body text-text-secondary">Não foi possível carregar os horários.</p>
-                <p className="text-xs font-body text-text-secondary/60">Tente novamente mais tarde.</p>
               </div>
             ) : slots.length === 0 ? (
               <div className="py-8 text-center">
@@ -216,16 +320,27 @@ export default function Book() {
             ) : (
               <SlotGrid slots={slots} selected={selectedSlot} onSelect={setSelectedSlot} />
             )}
-            <Button fullWidth size="lg" disabled={!selectedSlot} onClick={() => setStep(2)}>
+            <Button fullWidth size="lg" disabled={!selectedSlot} onClick={() => setStep(4)}>
               Próximo
             </Button>
           </div>
         )}
 
-        {step === 2 && (
+        {/* Step 4 — Confirm */}
+        {step === 4 && (
           <div className="flex flex-col gap-5">
             <h2 className="font-display font-bold text-sm uppercase tracking-widest text-text-secondary">Confirmação</h2>
             <div className="bg-bg-surface border border-border border-l-[3px] border-l-accent rounded-sm p-5 flex flex-col gap-3">
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-body text-text-secondary uppercase tracking-wider">Serviço</span>
+                <span className="font-body font-medium text-text-primary">{selectedService?.name}</span>
+              </div>
+              <div className="h-px bg-border" />
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-body text-text-secondary uppercase tracking-wider">Barbeiro</span>
+                <span className="font-body font-medium text-text-primary">{selectedBarber?.displayName}</span>
+              </div>
+              <div className="h-px bg-border" />
               <div className="flex justify-between items-center">
                 <span className="text-xs font-body text-text-secondary uppercase tracking-wider">Data</span>
                 <span className="font-body font-medium text-text-primary capitalize">{formattedDate}</span>
@@ -234,6 +349,11 @@ export default function Book() {
               <div className="flex justify-between items-center">
                 <span className="text-xs font-body text-text-secondary uppercase tracking-wider">Horário</span>
                 <span className="font-display font-bold text-2xl text-text-primary">{selectedSlot}</span>
+              </div>
+              <div className="h-px bg-border" />
+              <div className="flex justify-between items-center">
+                <span className="text-xs font-body text-text-secondary uppercase tracking-wider">Valor</span>
+                <span className="font-body font-medium text-accent">R$ {Number(selectedService?.price).toFixed(2)}</span>
               </div>
             </div>
             <Button fullWidth size="lg" loading={isPending} onClick={() => createAppointment()}>

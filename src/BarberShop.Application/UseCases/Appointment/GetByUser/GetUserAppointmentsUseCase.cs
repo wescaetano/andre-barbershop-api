@@ -31,14 +31,14 @@ namespace BarberShop.Application.UseCases.Appointment.GetByUser
                         a.Id,
                         StartTime = a.StartTime.ToString("yyyy-MM-dd HH:mm"),
                         EndTime = a.EndTime.ToString("yyyy-MM-dd HH:mm"),
-                        Status = a.Status.ToString(),
+                        Status = (int)a.Status,
                         a.CreationDate,
                         Payment = a.Payment == null ? null : new
                         {
                             a.Payment.Id,
                             a.Payment.Amount,
                             a.Payment.ExternalReference,
-                            Status = a.Payment.Status.ToString()
+                            Status = (int)a.Payment.Status
                         }
                     })
                     .ToList<object>()

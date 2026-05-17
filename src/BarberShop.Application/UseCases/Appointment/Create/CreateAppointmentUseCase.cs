@@ -8,28 +8,30 @@ namespace BarberShop.Application.UseCases.Appointment.Create
     public class CreateAppointmentUseCase : ICreateAppointmentUseCase
     {
         private readonly IBaseRepository<Domain.Appointment> _appointmentRepository;
-        private const int SlotMinutes = 30;
+        private readonly IBaseRepository<Domain.Service> _serviceRepository;
 
-        public CreateAppointmentUseCase(IBaseRepository<Domain.Appointment> appointmentRepository)
+        public CreateAppointmentUseCase(
+            IBaseRepository<Domain.Appointment> appointmentRepository,
+            IBaseRepository<Domain.Service> serviceRepository)
         {
             _appointmentRepository = appointmentRepository;
+            _serviceRepository = serviceRepository;
         }
 
         public async Task<ResponseModel<dynamic>> ExecuteAsync(CreateAppointmentModel model)
         {
-            var validator = new CreateAppointmentValidator();
-            var validation = validator.Validate(model);
-            if (!validation.IsValid)
-            {
-                var errors = string.Join("; ", validation.Errors.Select(e => e.ErrorMessage));
-                return FactoryResponse<dynamic>.InvalidModel(errors);
-            }
+            var service = await _serviceRepository.Get(model.ServiceId);
+            if (service == null)
+                return FactoryResponse<dynamic>.NotFound("Serviço não encontrado.");
 
             var startTime = model.Date.ToDateTime(model.StartTime);
-            var endTime = startTime.AddMinutes(SlotMinutes);
+            var endTime = startTime.AddMinutes(service.DurationMinutes);
 
             var slotOccupied = await _appointmentRepository.Get(
-                a => a.StartTime == startTime && a.Status != EAppointmentStatus.Cancelled);
+                a => a.BarberId == model.BarberId
+                  && a.StartTime < endTime
+                  && a.EndTime > startTime
+                  && a.Status != EAppointmentStatus.Cancelled);
 
             if (slotOccupied != null)
                 return FactoryResponse<dynamic>.Conflict("Este horário já está ocupado.");
@@ -37,27 +39,22 @@ namespace BarberShop.Application.UseCases.Appointment.Create
             var appointment = new Domain.Appointment
             {
                 UserId = model.UserId,
+                BarberId = model.BarberId,
+                ServiceId = model.ServiceId,
                 StartTime = startTime,
                 EndTime = endTime,
                 Status = EAppointmentStatus.WaitingPayment
             };
             appointment.AddCreationDate();
 
-            try
+            await _appointmentRepository.Create(appointment);
+            return FactoryResponse<dynamic>.SuccessfulCreation(new
             {
-                await _appointmentRepository.Create(appointment);
-                return FactoryResponse<dynamic>.SuccessfulCreation(new
-                {
-                    appointment.Id,
-                    appointment.StartTime,
-                    appointment.EndTime,
-                    Status = appointment.Status.ToString()
-                });
-            }
-            catch (Exception e)
-            {
-                return FactoryResponse<dynamic>.BadRequestErroInterno(e.Message);
-            }
+                appointment.Id,
+                appointment.StartTime,
+                appointment.EndTime,
+                Status = (int)appointment.Status
+            });
         }
     }
 }

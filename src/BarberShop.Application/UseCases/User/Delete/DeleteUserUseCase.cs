@@ -21,13 +21,7 @@ namespace BarberShop.Application.UseCases.User.Delete
             if (user == null)
                 return FactoryResponse<dynamic>.NotFound("Usuário não encontrado.");
 
-            if (user.ExclusionDate.HasValue)
-                return FactoryResponse<dynamic>.Conflict("Usuário já foi removido.");
-
-            user.AddExclusionDate();
-            user.AddUpdateDate();
-
-            await _userRepository.Update(user);
+            await _userRepository.Remove(user);
 
             return FactoryResponse<dynamic>.Success("Usuário removido com sucesso.");
         }

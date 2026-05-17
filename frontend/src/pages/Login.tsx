@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { useNavigate, useLocation, useSearchParams } from 'react-router-dom'
+import { Navigate, useNavigate, useLocation, useSearchParams } from 'react-router-dom'
 import { useForm } from 'react-hook-form'
 import { z } from 'zod'
 import { zodResolver } from '@hookform/resolvers/zod'
@@ -19,6 +19,7 @@ const loginSchema = z.object({
 const registerSchema = z.object({
   name: z.string().min(1, 'Nome obrigatório'),
   email: z.string().email('E-mail inválido'),
+  password: z.string().min(6, 'Senha deve ter no mínimo 6 caracteres'),
 })
 
 type LoginData = z.infer<typeof loginSchema>
@@ -43,8 +44,7 @@ export default function Login() {
   const registerForm = useForm<RegisterData>({ resolver: zodResolver(registerSchema) })
 
   if (isAuthenticated) {
-    navigate(role === 'admin' ? '/admin' : '/app', { replace: true })
-    return null
+    return <Navigate to={role === 'admin' ? '/admin' : role === 'barber' ? '/barber' : '/app'} replace />
   }
 
   const onLogin = async ({ email, password }: LoginData) => {
@@ -52,7 +52,8 @@ export default function Login() {
     try {
       const data = await login(email, password)
       const isAdmin = data.modulesAssembled.moduleProfileUser.some((m) => m.name === 'Users')
-      navigate(returnTo ?? (isAdmin ? '/admin' : '/app'), { replace: true })
+      const isBarber = data.modulesAssembled.moduleProfileUser.some((m) => m.name === 'Barber')
+      navigate(returnTo ?? (isAdmin ? '/admin' : isBarber ? '/barber' : '/app'), { replace: true })
     } catch (err: unknown) {
       const label = err instanceof Error ? err.message : ''
       toast(getMessage(label, 'Erro ao fazer login.'), 'error')
@@ -61,10 +62,10 @@ export default function Login() {
     }
   }
 
-  const onRegister = async ({ name, email }: RegisterData) => {
+  const onRegister = async ({ name, email, password }: RegisterData) => {
     setLoading(true)
     try {
-      const res = await authApi.register(name, email)
+      const res = await authApi.register(name, email, password)
       if (!res.success) throw new Error(res.responseLabel)
       setRegistered(true)
     } catch (err: unknown) {
@@ -116,7 +117,7 @@ export default function Login() {
             <div>
               <h2 className="font-display font-bold text-xl uppercase tracking-wide">Conta criada!</h2>
               <p className="text-text-secondary text-sm font-body mt-1">
-                Verifique seu e-mail para definir sua senha.
+                Sua conta foi criada com sucesso. Faça login para continuar.
               </p>
             </div>
             <Button fullWidth size="lg" onClick={goToLogin}>
@@ -149,6 +150,14 @@ export default function Login() {
                 placeholder="seuemail@exemplo.com"
                 error={registerForm.formState.errors.email?.message}
                 {...registerForm.register('email')}
+              />
+              <Input
+                id="reg-password"
+                label="Senha"
+                type="password"
+                placeholder="Mínimo 6 caracteres"
+                error={registerForm.formState.errors.password?.message}
+                {...registerForm.register('password')}
               />
               <Button type="submit" fullWidth size="lg" loading={loading}>
                 Criar conta
