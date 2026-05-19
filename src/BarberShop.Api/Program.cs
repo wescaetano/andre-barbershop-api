@@ -80,6 +80,12 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
+// Run pending migrations on startup
+using (var scope = app.Services.CreateScope())
+{
+    var db = scope.ServiceProvider.GetRequiredService<BarberShopContext>();
+    db.Database.Migrate();
+}
 
 //swagger
 app.UseStaticFiles();
@@ -101,7 +107,7 @@ app.UseCors();
 app.UseMiddleware<JwtMiddleware>();
 app.UseAuthentication();
 app.UseAuthorization();
-app.UseHttpsRedirection();
+if (app.Environment.IsDevelopment()) app.UseHttpsRedirection();
 
 #region Middlewares
 app.UseMiddleware(typeof(HandlingMiddleware));
