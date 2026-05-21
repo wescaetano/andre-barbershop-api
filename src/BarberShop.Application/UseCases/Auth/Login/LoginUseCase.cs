@@ -44,14 +44,14 @@ namespace BarberShop.Application.UseCases.Auth.Login
             if (user == null || string.IsNullOrWhiteSpace(user.Password))
             {
                 _logger.LogWarning("Login failed: user not found for email {Email}", loginNormalized);
-                return FactoryResponse<dynamic>.Unauthorized("Credenciais inválidas.");
+                return FactoryResponse<dynamic>.Unauthorized("Usuário não encontrado.");
             }
 
             var passwordMatch = HashHelper.PasswordCompare(user.Password, model.Password);
             if (!passwordMatch)
             {
                 _logger.LogWarning("Login failed: password mismatch for user {UserId}", user.Id);
-                return FactoryResponse<dynamic>.Unauthorized("Credenciais inválidas.");
+                return FactoryResponse<dynamic>.Unauthorized("Senha inválida.");
             }
 
             if (user.Status == EUserStatus.Inativo)
