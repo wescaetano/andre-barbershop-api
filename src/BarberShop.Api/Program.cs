@@ -25,7 +25,7 @@ builder.Services.AddControllers().AddJsonOptions(options =>
 builder.Services.AddDbContext<BarberShopContext>(options =>
 {
     options.UseMySql(config["ConnectionStrings:LocalConn"],
-        new MySqlServerVersion(new Version(8, 0)))
+        ServerVersion.AutoDetect(config["ConnectionStrings:LocalConn"]!))
         .UseLoggerFactory(LoggerFactory.Create(builder => builder.AddFilter((category, level) =>
             category == DbLoggerCategory.Database.Command.Name && level == LogLevel.Information)));
 }, ServiceLifetime.Transient);
