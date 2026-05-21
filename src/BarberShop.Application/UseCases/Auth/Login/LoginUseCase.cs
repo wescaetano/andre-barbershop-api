@@ -5,6 +5,7 @@ using BarberShop.Communication.Models.Token;
 using BarberShop.Communication.Utils;
 using BarberShop.Infra.Interfaces;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 
 namespace BarberShop.Application.UseCases.Auth.Login
 {
@@ -12,13 +13,16 @@ namespace BarberShop.Application.UseCases.Auth.Login
     {
         private readonly IBaseRepository<Domain.User> _userRepository;
         private readonly ITokenService _tokenService;
+        private readonly ILogger<LoginUseCase> _logger;
 
         public LoginUseCase(
             IBaseRepository<Domain.User> userRepository,
-            ITokenService tokenService)
+            ITokenService tokenService,
+            ILogger<LoginUseCase> logger)
         {
             _userRepository = userRepository;
             _tokenService = tokenService;
+            _logger = logger;
         }
 
         public async Task<ResponseModel<dynamic>> ExecuteAsync(LoginModel model)
@@ -31,15 +35,24 @@ namespace BarberShop.Application.UseCases.Auth.Login
                 return FactoryResponse<dynamic>.InvalidModel(errors);
             }
 
+            var loginNormalized = model.Login.Trim().ToLower();
+
             var user = await _userRepository.GetWithInclude(
-                u => u.Email.ToLower() == model.Login.ToLower(),
+                u => u.Email == loginNormalized,
                 query => query.Include(u => u.ProfilesUsers).ThenInclude(up => up.Profile));
 
             if (user == null || string.IsNullOrWhiteSpace(user.Password))
+            {
+                _logger.LogWarning("Login failed: user not found for email {Email}", loginNormalized);
                 return FactoryResponse<dynamic>.Unauthorized("Credenciais inválidas.");
+            }
 
-            if (!HashHelper.PasswordCompare(user.Password, model.Password))
+            var passwordMatch = HashHelper.PasswordCompare(user.Password, model.Password);
+            if (!passwordMatch)
+            {
+                _logger.LogWarning("Login failed: password mismatch for user {UserId}", user.Id);
                 return FactoryResponse<dynamic>.Unauthorized("Credenciais inválidas.");
+            }
 
             if (user.Status == EUserStatus.Inativo)
                 return FactoryResponse<dynamic>.BadRequest("Usuário inativo.");
